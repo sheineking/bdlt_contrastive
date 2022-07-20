@@ -1,10 +1,9 @@
-# - pairwise distance:
-# - triplet loss: https://pytorch.org/docs/stable/generated/torch.nn.TripletMarginLoss.html
-# - InfoNCE: https://pypi.org/project/info-nce-pytorch/
 import torch as T
+from info_nce import InfoNCE
 
-# Todo: Find good value for epsilon
+#Todo: Find good values for epsilon
 PAIRWISE_EPS = 2.0
+TRIPLET_EPS = 2.0
 
 class PairwiseLoss(T.nn.Module):
     def __init__(self, eps=PAIRWISE_EPS):
@@ -12,17 +11,18 @@ class PairwiseLoss(T.nn.Module):
         self.eps = eps
         self.pdist = T.nn.PairwiseDistance(p=2)
 
-    def forward(self, y1, y2, label):
+    def forward(self, embeddings: dict, label, num_sentences=None):
         """
-        Calculates the loss based on two embeddings and a label
-        :param y1:      First embedding
-        :param y2:      Second embedding
-        :param label:   1=The two sentences are paraphrases; 0=They are not
-        :return:        Loss for the given combination
+        Calculates the pairwise loss based on two embeddings and a label
+        :param embeddings:      The embeddings of one batch as a dictionary.
+                                It has to contain two dictionaries with the keys "emb1" and "emb2"
+        :param label:           1=The two sentences are paraphrases; 0=They are not
+        :param num_sentences:   Parameter is not required; Only for compatibility with InfoNCE
+        :return:                Loss for the given embeddings
         """
 
         # Calculate the distance
-        dist = self.pdist(y1, y2)
+        dist = self.pdist(embeddings["emb1"], embeddings["emb2"])
 
         # Calculate the loss (Based on Chopra et al. 2005)
         # - For all instances of label=1, the distance is the loss
@@ -32,3 +32,58 @@ class PairwiseLoss(T.nn.Module):
 
         loss = T.mean((label) * positive_cases + (1-label) * negative_cases)
         return loss
+
+
+
+
+class TripleLoss(T.nn.Module):
+    def __init__(self, eps=TRIPLET_EPS):
+        super(TripleLoss, self).__init__()
+        self.triplet_loss = T.nn.TripletMarginLoss(margin=eps, p=2)
+
+    def forward(self, embeddings: dict, label=None, num_sentences=None):
+        """
+        Calculates the triplet loss based on three embeddings
+        :param embeddings:      The embeddings of one batch as a dictionary.
+                                It has to contain three dictionaries with the keys "emb1", "emb2", and "emb3"
+        :param label:           Parameter is not required; Only for compatibility with pairwise loss
+        :param num_sentences:   Parameter is not required; Only for compatibility with InfoNCE
+        :return:                Loss for the given embeddings
+        """
+
+        anchor = embeddings['emb1']
+        positive = embeddings['emb2']
+        negative = embeddings['emb3']
+
+        return self.triplet_loss(anchor, positive, negative)
+
+
+
+class InfoNCE_Loss(T.nn.Module):
+    def __init__(self):
+        super(InfoNCE_Loss, self).__init__()
+        self.info_nce_loss = InfoNCE(negative_mode='paired')
+
+    def forward(self, embeddings: dict, label=None, num_sentences=None):
+        """
+        Calculates the paired InfoNCE loss based on the embeddings
+        :param embeddings:      The embeddings of one batch as a dictionary.
+                                It has to contain at least three dictionaries with the keys "emb1", "emb2", ...
+        :param label:           Parameter is not required; Only for compatibility with pairwise loss
+        :param num_sentences:   Number of sentences in the batch
+        :return:                Loss for the given embeddings
+        """
+
+        anchor = embeddings['emb1']
+        positive = embeddings['emb2']
+
+        # Stack the negative tensors into one tensor with the dimensions [batch_size, num_negative, embedding_size]
+        neg_list = []
+        for i in range(3, num_sentences+1):
+            neg_list.append(embeddings['emb' + str(i)])
+        negatives = T.stack(tensors=neg_list, dim=1)
+
+        # Return the loss
+        return self.info_nce_loss(anchor, positive, negatives)
+
+

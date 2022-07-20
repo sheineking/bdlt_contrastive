@@ -7,15 +7,18 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 model = AutoModel.from_pretrained(MODEL_NAME)
 
 
-
-# Todo: Clarify if no grad needs to be set here for non-training
-
-class PairwiseContrastive(T.nn.Module):
+class ContrastiveModel(T.nn.Module):
     def __init__(self):
-        super(PairwiseContrastive, self).__init__()
+        super(ContrastiveModel, self).__init__()
         self.encoder = model
 
     def feed(self, x):
+        """
+        Calculates the embeddings based on tokens, attention_masks and token_type_ids
+        :param x:   Input dictionary
+        :return:    Normalized embedding
+        """
+
         # Encode the input
         output = self.encoder(**x)
         embedding = mean_pooling(output, x['attention_mask'])
@@ -23,22 +26,29 @@ class PairwiseContrastive(T.nn.Module):
         # Return the normalized embedding
         return F.normalize(embedding, p=2, dim=1)
 
-    def forward(self, x1, x2):
-        """
-        Function that takes in two dictionaries of tokenized sentences of the form
 
-        {"input_ids": tensor([[...]]), "attention_mask": tensor([[...]])}
+    def forward(self, batch: dict, num_sentences: int):
+        """
+        Function that takes in a dictionary for the current batch that contains
+        dictionaries of tokenized sentences of the form
+
+        {"input_ids": tensor([[...]]), "attention_mask": tensor([[...]]), "token_type_ids": tensor([[..]])}
 
         and returns the corresponding embeddings.
 
-        :param x1:      Dictionary corresponding to the first tokenized sentence
-        :param x2:      Dictionary corresponding to the second tokenized sentence
-        :return:        Two embeddings
+        :param batch            The batch produced by a dataloader.
+                                It has to contain at least dictionaries with the keys "input1", "input2", ...
+        :param num_sentences    How many sentences are in the dataset (Varies based on loss)
+        :return:                The embeddings in a dictionary
         """
-        embedding1 = self.feed(x1)
-        embedding2 = self.feed(x2)
 
-        return embedding1, embedding2
+        # Produce embeddings for each of the inputs
+        embeddings = {}
+        for num in range(1, num_sentences + 1):
+            embedding = self.feed(batch["input" + str(num)])
+            embeddings['emb' + str(num)] = embedding
+
+        return embeddings
 
 
 
