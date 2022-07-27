@@ -1,16 +1,19 @@
 import torch as T
 import torch.nn.functional as F
 from transformers import AutoModel
+from torchlars import LARS
 
 # Available models: https://www.sbert.net/docs/pretrained_models.html
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-model = AutoModel.from_pretrained(MODEL_NAME)
 
 
+# ================================================================
+# Models
+# ================================================================
 class ContrastiveModel(T.nn.Module):
     def __init__(self):
         super(ContrastiveModel, self).__init__()
-        self.encoder = model
+        self.encoder = AutoModel.from_pretrained(MODEL_NAME)
 
     def feed(self, x):
         """
@@ -53,11 +56,54 @@ class ContrastiveModel(T.nn.Module):
 
 
 
-# ================================================================
+
 # Helper functions
-# ================================================================
+# ------------------------------------------------------------------------
 # From https://huggingface.co/sentence-transformers/all-mpnet-base-v2
 def mean_pooling(model_output, attention_mask):
     token_embeddings = model_output[0] #First element of model_output contains all token embeddings
     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
     return T.sum(token_embeddings * input_mask_expanded, 1) / T.clamp(input_mask_expanded.sum(1), min=1e-9)
+
+
+
+
+
+# ================================================================
+# Optimizer
+# ================================================================
+def get_optimizer(params, optimizer_name="sgd", lr=0.1, momentum=0, weight_decay=0, alpha=0.99, eps=1e-08,
+                  trust_coef=0.001):
+    """
+    Function to prepare an optimizer as specified by the parameters.
+    The selection was made based on the optimizers chosen by Khosla et al (https://arxiv.org/abs/2004.11362)
+
+    :param params:              Parameters of the model
+    :param optimizer_name:      Used to identify the optimizer to be used
+    :param lr:                  Learning rate
+    :param momentum:            Momentum for SGD or RMSProp
+    :param weight_decay:        Weight Decay for SGD or RMSProp
+    :param alpha:               Alpha for RMSProp
+    :param eps:                 Epsilon for RMSProp or LARS
+    :param trust_coef:          Trust coefficient for LARS
+    :return:
+    """
+    optimizer_name = optimizer_name.lower()
+
+    if optimizer_name == "rmsprop":
+        # https://pytorch.org/docs/stable/generated/torch.optim.RMSprop.html#torch.optim.RMSprop
+        optimizer = T.optim.RMSprop(params=params, lr=lr, alpha=alpha, eps=eps, weight_decay=weight_decay,
+                                    momentum=momentum)
+
+    elif optimizer_name == "lars":
+        # https://pypi.org/project/torchlars/
+        base_optimizer = T.optim.SGD(params=params, lr=lr)
+        optimizer = LARS(optimizer=base_optimizer, eps=eps, trust_coef=trust_coef)
+
+    else:
+        # https://pytorch.org/docs/stable/generated/torch.optim.SGD.html#torch.optim.SGD
+        optimizer = T.optim.SGD(params=params, lr=lr, momentum=momentum, weight_decay=weight_decay)
+
+    return optimizer
+
+

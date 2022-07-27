@@ -69,11 +69,13 @@ class LearningManager():
             model_name = m.MODEL_NAME.split("/")[1] + "_" + train_mode + "_" + time_stamp
 
         self.weight_path = MODEL_OUT_PATH + "/weights/" + model_name + ".pt"
-        self.log_path = MODEL_OUT_PATH + "/logs/" + model_name + "/"
+        self.log_path = MODEL_OUT_PATH + "/tensorboard_logs/" + model_name + "/"
+        self.csv_path = MODEL_OUT_PATH + "/csv_logs/" + model_name + ".csv"
 
         print("Initial preparation completed.")
         print(f"- Model weights will be saved to: {self.weight_path}")
-        print(f"- Training logs will be saved to {self.log_path}")
+        print(f"- Tensorboard logs will be saved to: {self.log_path}")
+        print(f"- CSV logs will be saved to: {self.csv_path}\n\n")
 
         # Ensure that the weights and logs folder exist
         self.create_model_folders()
@@ -83,13 +85,13 @@ class LearningManager():
         if not os.path.exists(MODEL_OUT_PATH):
             os.mkdir(MODEL_OUT_PATH)
 
-        weights_path = MODEL_OUT_PATH + '/weights/'
-        log_path = MODEL_OUT_PATH + '/logs/'
+        subfolder_list = ['/weights/', '/tensorboard_logs/', '/csv_logs/']
+        for folder in subfolder_list:
+            path = MODEL_OUT_PATH + folder
 
-        if not os.path.exists(weights_path):
-            os.mkdir(weights_path)
-        if not os.path.exists(log_path):
-            os.mkdir(log_path)
+            if not os.path.exists(path):
+                os.mkdir(path)
+
 
 
 
@@ -174,16 +176,28 @@ class LearningManager():
     # ----------------------------------------------------------------
     # Training
     # ----------------------------------------------------------------
-    def conduct_training(self, epochs=10, lr=0.005, optimizer_name='sgd', batch_size=2, subset=None):
+    def conduct_training(self, epochs=10, batch_size=2, optimizer_name='sgd', lr=0.1, momentum=0, weight_decay=0,
+                         alpha=0.99, eps=1e-08, trust_coef=0.001, subset=None):
         """
         Function that performs training on the train_ds and validates on the eval_ds.
         Checkpointing is performed based on validation loss.
 
-        :param epochs:          How many epochs to train
-        :param lr:              The learning rate
-        :param optimizer_name:  String to identify the optimizer
-        :param batch_size:      Batch size used in training
-        :param subset:          Optional: If only a subset of the data should be used
+        :param epochs:              How many epochs to train
+        :param batch_size:          Batch size used in training
+
+        Optimizer parameters
+        ----------------------------------
+        :param optimizer_name:      String to identify the optimizer
+        :param lr:                  The learning rate
+        :param momentum:            Momentum for SGD or RMSProp
+        :param weight_decay:        Weight Decay for SGD or RMSProp
+        :param alpha:               Alpha for RMSProp
+        :param eps:                 Epsilon for RMSProp or LARS
+        :param trust_coef:          Trust coefficient for LARS
+
+        Others
+        -------------------------------------
+        :param subset:              Optional: If only a subset of the data should be used
         """
 
         if not hasattr(self, "train_ds"):
@@ -191,8 +205,13 @@ class LearningManager():
 
         # Prepare model, optimizer and summary writer
         model = self.model.to(device)
-        optimizer = T.optim.SGD(model.parameters(), lr=lr)
+        optimizer = m.get_optimizer(params=model.parameters(), optimizer_name=optimizer_name, lr=lr, momentum=momentum,
+                                    weight_decay=weight_decay, alpha=alpha, eps=eps, trust_coef=trust_coef)
         writer = SummaryWriter(log_dir=self.log_path)
+
+        # Create a csv-file to write the loss values
+        with open(self.csv_path, 'w') as file:
+            file.write('epoch,train_loss,val_loss,\n')
 
         # Prepare the two dataloaders
         train_data = self.train_ds.select(range(subset)) if subset is not None else self.train_ds
@@ -206,10 +225,9 @@ class LearningManager():
         print("\nPerforming training based on the following parameters:")
         print(f"- Epochs:           {epochs}")
         print(f"- Batchsize:        {batch_size}")
-        print(f"- Learning Rate:    {lr}")
         print(f"- Num sentences:    {self.num_sentences}")
         print(f"- Optimizer:        {optimizer}")
-        print(f"- Loss:             {self.loss}")
+        print(f"- Loss:             {self.loss}\n\n")
 
         for epoch in range(epochs):
             print("\n" + "-" * 100)
@@ -231,9 +249,12 @@ class LearningManager():
                 T.save(model.state_dict(), self.weight_path)
                 print(f"New checkpoint for validation loss. Model weights saved to {self.weight_path}")
 
-            # Write the logs
+            # Write the logs for tensorboard and the csv-file
             writer.add_scalar("Loss/train", train_loss, epoch)
             writer.add_scalar("Loss/val", val_loss, epoch)
+
+            with open(self.csv_path, 'a') as file:
+                file.write(str(epoch) + ',' + str(train_loss) + ',' + str(val_loss) + '\n')
 
             # Print an update
             print("Train-Loss = %10.8f  |   Validation-Loss = %10.8f" % (train_loss, val_loss))
