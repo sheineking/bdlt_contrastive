@@ -3,6 +3,7 @@ from transformers import AutoTokenizer
 import torch as T
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
+import wandb
 
 import os
 import time
@@ -11,7 +12,7 @@ import models as m
 import losses as l
 import dataset_prep_dummy as d
 
-# Todo: Implement wandb callback and early stopping based on loss
+# Todo: Implement early stopping based on loss
 
 # ================================================================
 # Constants
@@ -32,6 +33,7 @@ TRAIN_MODES = {"pairwise": {"model": m.ContrastiveModel(),
                "infoNCE": {"model": m.ContrastiveModel(),
                             "loss": l.InfoNCE_Loss()}}
 
+# Todo: Decide about max sequence length
 MAX_SEQ_LEN = 128
 MODEL_OUT_PATH = os.path.abspath('./models/')
 
@@ -45,11 +47,12 @@ device = T.device("cuda" if T.cuda.is_available() else "cpu")
 # Main class
 # ================================================================
 class LearningManager():
-    def __init__(self,  train_mode="pairwise", model_name=None):
+    def __init__(self,  train_mode="pairwise", model_name=None, use_wandb=False):
         """
         Defines the instance of the LearningManager
         :param train_mode:      ["pairwise", "triple_loss", "infoNCE"]. Refers to the keys in TRAIN_MODES
         :param model_name:      Optional: Name to identify weights and logs; If None, a name is constructed
+        :param use_wandb:           True: Training is conducted as part of wandb sweeping
         """
 
         print("\n" + "="*50)
@@ -78,8 +81,10 @@ class LearningManager():
         print(f"- Tensorboard logs will be saved to: {self.log_path}")
         print(f"- CSV logs will be saved to: {self.csv_path}\n\n")
 
-        # Ensure that the weights and logs folder exist
-        self.create_model_folders()
+        if not use_wandb:
+            # Ensure that the weights and logs folder exist
+            self.create_model_folders()
+        self.use_wandb = use_wandb
 
 
     def create_model_folders(self):
@@ -204,15 +209,17 @@ class LearningManager():
         if not hasattr(self, "train_ds"):
             self.tokenize_data()
 
-        # Prepare model, optimizer and summary writer
+        # Prepare model and optimizer
         model = self.model.to(device)
         optimizer = m.get_optimizer(params=model.parameters(), optimizer_name=optimizer_name, lr=lr, momentum=momentum,
                                     weight_decay=weight_decay, alpha=alpha, eps=eps, trust_coef=trust_coef)
-        writer = SummaryWriter(log_dir=self.log_path)
 
-        # Create a csv-file to write the loss values
-        with open(self.csv_path, 'w') as file:
-            file.write('epoch,train_loss,val_loss,\n')
+
+        # Create summary writer and a csv-file to write the loss values (if not wandb sweeping)
+        if not self.use_wandb:
+            writer = SummaryWriter(log_dir=self.log_path)
+            with open(self.csv_path, 'w') as file:
+                file.write('epoch,train_loss,val_loss,\n')
 
         # Prepare the two dataloaders
         train_data = self.train_ds.select(range(subset)) if subset is not None else self.train_ds
@@ -244,21 +251,29 @@ class LearningManager():
             with T.no_grad():
                 val_loss = self.loss_epoch(model=model, dataloader=eval_dl)
 
-            # Perform checkpointing
-            if val_loss < best_val_loss:
+            # Perform checkpointing (if not wandb sweeping)
+            if not self.use_wandb and val_loss < best_val_loss:
                 best_val_loss = val_loss
                 T.save(model.state_dict(), self.weight_path)
                 print(f"New checkpoint for validation loss. Model weights saved to {self.weight_path}")
 
-            # Write the logs for tensorboard and the csv-file
-            writer.add_scalar("Loss/train", train_loss, epoch)
-            writer.add_scalar("Loss/val", val_loss, epoch)
-
-            with open(self.csv_path, 'a') as file:
-                file.write(str(epoch) + ',' + str(train_loss) + ',' + str(val_loss) + '\n')
-
             # Print an update
             print("Train-Loss = %10.8f  |   Validation-Loss = %10.8f" % (train_loss, val_loss))
+
+
+            # Logging
+            # If training is not part of wandb sweeping, log the results for tensorboard and as csv
+            if not self.use_wandb:
+                # Write the logs for tensorboard and the csv-file
+                writer.add_scalar("Loss/train", train_loss, epoch)
+                writer.add_scalar("Loss/val", val_loss, epoch)
+
+                with open(self.csv_path, 'a') as file:
+                    file.write(str(epoch) + ',' + str(train_loss) + ',' + str(val_loss) + '\n')
+
+            else:
+                wandb.log({"train_loss": train_loss,
+                           "val_loss": val_loss})
 
 
         # Close the writer
