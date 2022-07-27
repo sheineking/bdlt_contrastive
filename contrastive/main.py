@@ -1,10 +1,10 @@
 import argparse
 import json
 
-import contrastive_learning as l
+import learning_manager as l
 
 
-CONFIG_PATH = l.MODEL_OUT_PATH + "model_configs.json"
+CONFIG_PATH = l.MODEL_OUT_PATH + "/model_configs.json"
 CONFIGS = json.load(open(CONFIG_PATH))
 
 

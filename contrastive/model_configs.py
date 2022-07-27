@@ -1,5 +1,5 @@
 import json
-import contrastive as c
+import main as m
 
 # Note on the configurations: Not all optimizers need all parameters.
 # They are included for easier usage in contrastive.py
@@ -54,5 +54,5 @@ CONFIGS = {"Pairwise_SGD": {"learning_manager": {"train_mode": "pairwise", "mode
 
 
 if __name__ == "__main__":
-    with open(c.CONFIG_PATH, 'w') as f:
+    with open(m.CONFIG_PATH, 'w') as f:
         json.dump(CONFIGS, f, indent=4)

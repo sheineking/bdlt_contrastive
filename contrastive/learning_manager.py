@@ -8,9 +8,10 @@ import os
 import time
 
 import models as m
-import contrastive_losses as l
+import losses as l
 import dataset_prep_dummy as d
 
+# Todo: Implement wandb callback and early stopping based on loss
 
 # ================================================================
 # Constants
@@ -32,7 +33,7 @@ TRAIN_MODES = {"pairwise": {"model": m.ContrastiveModel(),
                             "loss": l.InfoNCE_Loss()}}
 
 MAX_SEQ_LEN = 128
-MODEL_OUT_PATH = './models/'
+MODEL_OUT_PATH = os.path.abspath('./models/')
 
 # ================================================================
 # Preparation
@@ -189,8 +190,8 @@ class LearningManager():
         ----------------------------------
         :param optimizer_name:      String to identify the optimizer
         :param lr:                  The learning rate
-        :param momentum:            Momentum for SGD or RMSProp
-        :param weight_decay:        Weight Decay for SGD or RMSProp
+        :param momentum:            Momentum factor for SGD, RMSProp, and LARS
+        :param weight_decay:        Weight Decay for SGD, RMSProp, and LARS
         :param alpha:               Alpha for RMSProp
         :param eps:                 Epsilon for RMSProp or LARS
         :param trust_coef:          Trust coefficient for LARS

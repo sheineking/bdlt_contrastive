@@ -81,8 +81,8 @@ def get_optimizer(params, optimizer_name="sgd", lr=0.1, momentum=0, weight_decay
     :param params:              Parameters of the model
     :param optimizer_name:      Used to identify the optimizer to be used
     :param lr:                  Learning rate
-    :param momentum:            Momentum for SGD or RMSProp
-    :param weight_decay:        Weight Decay for SGD or RMSProp
+    :param momentum:            Momentum factor for SGD, RMSProp, and LARS
+    :param weight_decay:        Weight Decay for SGD, RMSProp, and LARS
     :param alpha:               Alpha for RMSProp
     :param eps:                 Epsilon for RMSProp or LARS
     :param trust_coef:          Trust coefficient for LARS
@@ -97,7 +97,7 @@ def get_optimizer(params, optimizer_name="sgd", lr=0.1, momentum=0, weight_decay
 
     elif optimizer_name == "lars":
         # https://pypi.org/project/torchlars/
-        base_optimizer = T.optim.SGD(params=params, lr=lr)
+        base_optimizer = T.optim.SGD(params=params, lr=lr, momentum=momentum, weight_decay=weight_decay)
         optimizer = LARS(optimizer=base_optimizer, eps=eps, trust_coef=trust_coef)
 
     else:
