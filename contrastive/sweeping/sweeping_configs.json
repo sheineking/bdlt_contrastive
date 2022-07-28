@@ -57,7 +57,7 @@
                 },
                 "model_name": {
                     "values": [
-                        "Pairwise_SGD_Sweep"
+                        "Pairwise_RMS_Sweep"
                     ]
                 },
                 "optimizer_name": {

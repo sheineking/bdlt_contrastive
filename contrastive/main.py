@@ -2,10 +2,7 @@ import argparse
 import json
 
 import learning_manager as l
-
-
-CONFIG_PATH = l.MODEL_OUT_PATH + "/model_configs.json"
-CONFIGS = json.load(open(CONFIG_PATH))
+import model_configs as c
 
 
 def parse_arguments():
@@ -45,7 +42,8 @@ def parse_arguments():
 
 def update_params(args):
     # Get the param_dict based on the config argument
-    param_dict = CONFIGS[args.config]
+    configs = json.load(open(c.CONFIG_PATH))
+    param_dict = configs[args.config]
 
     # Update Learning Manager parameters
     param_dict['learning_manager']['model_name'] = args.model_name if args.model_name is not None \

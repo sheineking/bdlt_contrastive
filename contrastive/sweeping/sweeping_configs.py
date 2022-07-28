@@ -44,7 +44,7 @@ SWEEP_CONFIGS = {"Pairwise_SGD": {"sweep_config": {"name": "Pairwise_SGD",
                                                            {"values": ["pairwise"]},
 
                                                        "model_name":
-                                                           {"values": ["Pairwise_SGD_Sweep"]},
+                                                           {"values": ["Pairwise_RMS_Sweep"]},
 
                                                        "optimizer_name":
                                                            {"values": ["rmsprop"]},

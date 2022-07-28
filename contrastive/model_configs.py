@@ -1,8 +1,9 @@
 import json
-import main as m
+import learning_manager as l
 
 # Note on the configurations: Not all optimizers need all parameters.
-# They are included for easier usage in contrastive.py
+# They are included for easier usage in main.py
+CONFIG_PATH = l.MODEL_OUT_PATH + "/model_configs.json"
 CONFIGS = {"Pairwise_SGD": {"learning_manager": {"train_mode": "pairwise", "model_name": "Pairwise_SGD"},
                             "training": {"epochs": 10, "batch_size": 2, "optimizer_name": "sgd", "lr": 0.1,
                                          "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
@@ -54,5 +55,5 @@ CONFIGS = {"Pairwise_SGD": {"learning_manager": {"train_mode": "pairwise", "mode
 
 
 if __name__ == "__main__":
-    with open(m.CONFIG_PATH, 'w') as f:
+    with open(CONFIG_PATH, 'w') as f:
         json.dump(CONFIGS, f, indent=4)
