@@ -25,7 +25,7 @@ python main.py --mode=contrastive --config=Pairwise_LARS --epochs=15
 
 
 ## Sweeping
-In order to obtain optimal hyperparameters, the script in [sweeping](./sweeping) runs sweeps with [Weights and Biases](wandb.ai).
+In order to obtain optimal hyperparameters, the script in [sweeping](./sweeping) runs sweeps with [Weights and Biases](www.wandb.ai).
 The usage is similar to the main.py script. Inside the sweeping-folder execute the following command:
 ```
 python sweeping.py --mode=contrastive
