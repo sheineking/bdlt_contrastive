@@ -1,14 +1,15 @@
 import argparse
 import json
-
-import learning_manager as l
-import model_configs as c
+import os
+import sys
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Supervised Learning')
+    parser = argparse.ArgumentParser(description='Paraphrase classifier')
 
-    # First, define the base configuration to be used
+    # First, define the mode (contrastive or supervised) and base configuration to be used
+    parser.add_argument('--mode', metavar='mode', type=str, required=True,
+                        help='"contrastive" or "supervised". Chooses which kind of training to conduct.')
     parser.add_argument('--config', metavar='config', type=str, required=True,
                         help='Name of the base configuration. Used as key for the dictionary saved '
                              'in model_configs.json')
@@ -40,9 +41,8 @@ def parse_arguments():
 
 
 
-def update_params(args):
+def update_params(args, configs):
     # Get the param_dict based on the config argument
-    configs = json.load(open(c.CONFIG_PATH))
     param_dict = configs[args.config]
 
     # Update Learning Manager parameters
@@ -69,14 +69,35 @@ def update_params(args):
 
     return param_dict
 
+def switch_directory(folder_name='./contrastive/'):
+    abs_path = os.path.abspath(folder_name + "learning_manager.py")
+    dir_name = os.path.dirname(abs_path)
+
+    sys.path.append(dir_name)
+    os.chdir(dir_name)
 
 
 if __name__ == "__main__":
     # Argument Parsing
     args = parse_arguments()
 
+    # Switch directory to import the correct modules
+    if args.mode == "supervised":
+        switch_directory('./supervised/')
+
+    elif args.mode == "contrastive":
+        switch_directory('./contrastive/')
+
+    else:
+        print("Please provide a valid mode: 'contrastive' or 'supervised ")
+        exit(1)
+
+    import learning_manager as l
+    import model_configs as c
+
     # Parameter Updating
-    param_dict = update_params(args)
+    configs = json.load(open(c.CONFIG_PATH))
+    param_dict = update_params(args, configs)
 
     # Apply the param_dict
     Manager = l.LearningManager(**param_dict['learning_manager'])
