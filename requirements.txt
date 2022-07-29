@@ -1,15 +1,15 @@
-pandas==1.4.2
-scikit-learn==1.0.2
-scipy==1.8.0
 transformers==4.20.1
 datasets==2.3.2
 wandb==0.12.16
-protobuf==3.20.1
-torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+
+--extra-index-url https://download.pytorch.org/whl/cu116
+torch
+torchvision
+torchaudio
+
 info-nce-pytorch==0.1.4
 torchlars==0.1.2
+torchmetrics==0.9.3
 
 protobuf==3.20.0
 tensorboard==2.8.0
-tensorflow==2.8.0
-keras==2.8.0

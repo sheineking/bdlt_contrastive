@@ -5,6 +5,13 @@ on top.
 The folder [supervised](./supervised) follows as similar structure and is used to train the encoder and classifier at once.
 This is meant to create a baseline model against which to compare the performance of the contrastive model.
 
+## Setup
+In order to use the repository, install all packages from requirements.txt
+```
+pip install -r 'requirements.txt'
+```
+
+
 ## Training
 The training (contrastive and supervised) can be done using the [main.py](./main.py) script by passing the required flags.
 - The mode-flag is used to switch between contrastive and supervised
