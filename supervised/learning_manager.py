@@ -12,16 +12,11 @@ import time
 
 import models as m
 
-# Todo: Implement early stopping based on loss
-
 # ================================================================
 # Constants
 # ================================================================
 
 DATASET = {"path": "glue", "name": "mrpc"}
-
-# Todo: Decide about max sequence length
-MAX_SEQ_LEN = 128
 MODEL_OUT_PATH = os.path.abspath('./models/')
 
 # ================================================================
@@ -142,7 +137,8 @@ class LearningManager():
         sentence2 = example["sentence2"]
 
         # Return the tokenized sentences (Note: They are in one array)
-        return self.tokenizer(sentence1, sentence2, padding="max_length", truncation=True, max_length=MAX_SEQ_LEN)
+        # Pad to the maximum length of the model
+        return self.tokenizer(sentence1, sentence2, padding="max_length", truncation=True)
 
 
 
@@ -151,7 +147,7 @@ class LearningManager():
     # Training
     # ----------------------------------------------------------------
     def conduct_training(self, epochs=10, batch_size=8, optimizer_name='sgd', lr=0.01, momentum=0, weight_decay=0,
-                         alpha=0.99, eps=1e-08, trust_coef=0.001, subset=None):
+                         alpha=0.99, eps=1e-08, trust_coef=0.001, stopping_patience=3, subset=None):
         """
         Function that performs training on the train_ds and validates on the eval_ds.
         Checkpointing is performed based on validation loss.
@@ -171,6 +167,7 @@ class LearningManager():
 
         Others
         -------------------------------------
+        :param stopping_patience:  Number of epochs that val_loss is allowed to not improve before stopping
         :param subset:              Optional: If only a subset of the data should be used
         """
 
@@ -182,6 +179,11 @@ class LearningManager():
         optimizer = m.get_optimizer(params=model.parameters(), optimizer_name=optimizer_name, lr=lr, momentum=momentum,
                                     weight_decay=weight_decay, alpha=alpha, eps=eps, trust_coef=trust_coef)
 
+        # Prepare early stopping and checkpointing
+        self.stopping_patience = stopping_patience
+        self.stagnant_epochs = 0
+        self.previous_loss = float('inf')
+        self.best_val_loss = float('inf')
 
         # Create summary writer and a csv-file to write the loss values (if not wandb sweeping)
         if not self.use_wandb:
@@ -203,14 +205,13 @@ class LearningManager():
         train_dl = DataLoader(train_data, batch_size=batch_size)
         eval_dl = DataLoader(eval_data, batch_size=batch_size)
 
-        # Initialize the validation loss used for checkpointing
-        best_val_loss = float('inf')
 
         print("\nPerforming training based on the following parameters:")
         print(f"- Epochs:           {epochs}")
         print(f"- Batchsize:        {batch_size}")
         print(f"- Optimizer:        {optimizer}")
-        print(f"- Loss:             {self.loss}\n\n")
+        print(f"- Loss:             {self.loss}")
+        print(f"- Patience:         {stopping_patience}\n\n")
 
         for epoch in range(epochs):
             print("\n" + "-" * 100)
@@ -231,12 +232,6 @@ class LearningManager():
                 train_metrics["train_" + key] = train_metrics.pop(key)
                 val_metrics["val_" + key] = val_metrics.pop(key)
 
-            # Perform checkpointing (if not wandb sweeping)
-            if not self.use_wandb and val_loss < best_val_loss:
-                best_val_loss = val_loss
-                T.save(model.state_dict(), self.weight_path)
-                print(f"New checkpoint for validation loss. Model weights saved to {self.weight_path}\n")
-
             # Print an update
             self.print_update(train_loss, val_loss, train_metrics, val_metrics)
 
@@ -249,10 +244,46 @@ class LearningManager():
                 wandb_dict = {**{"train_loss": train_loss, "val_loss": val_loss}, **train_metrics, **val_metrics}
                 wandb.log(wandb_dict)
 
+            # Perform checkpointing and check for early stopping
+            if not self.continue_training_and_checkpoint(val_loss, model):
+                print(f"No improvement on val_loss detected for {self.stopping_patience} epochs.")
+                print("Stopping training...")
+                break
+
         # Close the writer
         writer.flush()
         writer.close()
 
+
+    def continue_training_and_checkpoint(self, val_loss, model):
+        # Initialize the return value
+        continue_training = True
+
+        # Check if an improvement to the last epoch took place; If yes, reset stagnant epochs
+        if val_loss < self.previous_loss:
+            self.stagnant_epochs = 0
+
+            # Check for new optimum; If yes, update the best_val_loss and checkpoint
+            if val_loss < self.best_val_loss:
+                self.best_val_loss = val_loss
+
+                # Only checkpoint if not used in hyperparameter sweep
+                if not self.use_wandb:
+                    T.save(model.state_dict(), self.weight_path)
+                    print(f"New checkpoint for validation loss. Model weights saved to {self.weight_path}\n")
+
+        # Otherwise increase stagnant epochs and check patience
+        else:
+            self.stagnant_epochs += 1
+
+            # If no improvement took place for the specified number of epochs, stop training
+            if self.stagnant_epochs > self.stopping_patience:
+                continue_training = False
+
+        # Update the previous loss
+        self.previous_loss = val_loss
+
+        return continue_training
 
 
 

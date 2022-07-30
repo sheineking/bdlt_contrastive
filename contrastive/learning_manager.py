@@ -12,7 +12,6 @@ import models as m
 import losses as l
 import dataset_prep_dummy as d
 
-# Todo: Implement early stopping based on loss
 
 # ================================================================
 # Constants
@@ -33,8 +32,6 @@ TRAIN_MODES = {"pairwise": {"model": m.ContrastiveModel(),
                "infoNCE": {"model": m.ContrastiveModel(),
                             "loss": l.InfoNCE_Loss()}}
 
-# Todo: Decide about max sequence length
-MAX_SEQ_LEN = 128
 MODEL_OUT_PATH = os.path.abspath('./models/')
 
 # ================================================================
@@ -168,7 +165,9 @@ class LearningManager():
         # Tokenize all sentences
         for num in range(1, self.num_sentences + 1):
             sentence = example["sentence" + str(num)]
-            tokens_dict = self.tokenizer(sentence, padding="max_length", truncation=True, max_length=MAX_SEQ_LEN)
+
+            # Pad to the maximum length of the model
+            tokens_dict = self.tokenizer(sentence, padding="max_length", truncation=True)
 
             # Add the tokens_dict to the result_dict and increase the iterator
             result_dict["input" + str(num)] = tokens_dict
@@ -183,7 +182,7 @@ class LearningManager():
     # Training
     # ----------------------------------------------------------------
     def conduct_training(self, epochs=10, batch_size=2, optimizer_name='sgd', lr=0.1, momentum=0, weight_decay=0,
-                         alpha=0.99, eps=1e-08, trust_coef=0.001, subset=None):
+                         alpha=0.99, eps=1e-08, trust_coef=0.001, stopping_patience=3, subset=None):
         """
         Function that performs training on the train_ds and validates on the eval_ds.
         Checkpointing is performed based on validation loss.
@@ -203,6 +202,7 @@ class LearningManager():
 
         Others
         -------------------------------------
+        :param stopping_patience:   Number of epochs that val_loss is allowed to not improve before stopping
         :param subset:              Optional: If only a subset of the data should be used
         """
 
@@ -214,6 +214,11 @@ class LearningManager():
         optimizer = m.get_optimizer(params=model.parameters(), optimizer_name=optimizer_name, lr=lr, momentum=momentum,
                                     weight_decay=weight_decay, alpha=alpha, eps=eps, trust_coef=trust_coef)
 
+        # Prepare early stopping and checkpointing
+        self.stopping_patience = stopping_patience
+        self.stagnant_epochs = 0
+        self.previous_loss = float('inf')
+        self.best_val_loss = float('inf')
 
         # Create summary writer and a csv-file to write the loss values (if not wandb sweeping)
         if not self.use_wandb:
@@ -227,15 +232,13 @@ class LearningManager():
         train_dl = DataLoader(train_data, batch_size=batch_size)
         eval_dl = DataLoader(eval_data, batch_size=batch_size)
 
-        # Initialize the validation loss used for checkpointing
-        best_val_loss = float('inf')
-
         print("\nPerforming training based on the following parameters:")
         print(f"- Epochs:           {epochs}")
         print(f"- Batchsize:        {batch_size}")
         print(f"- Num sentences:    {self.num_sentences}")
         print(f"- Optimizer:        {optimizer}")
-        print(f"- Loss:             {self.loss}\n\n")
+        print(f"- Loss:             {self.loss}")
+        print(f"- Patience:         {stopping_patience}\n\n")
 
         for epoch in range(epochs):
             print("\n" + "-" * 100)
@@ -251,36 +254,58 @@ class LearningManager():
             with T.no_grad():
                 val_loss = self.loss_epoch(model=model, dataloader=eval_dl)
 
-            # Perform checkpointing (if not wandb sweeping)
-            if not self.use_wandb and val_loss < best_val_loss:
-                best_val_loss = val_loss
-                T.save(model.state_dict(), self.weight_path)
-                print(f"New checkpoint for validation loss. Model weights saved to {self.weight_path}")
-
             # Print an update
-            print("Train-Loss = %10.8f  |   Validation-Loss = %10.8f" % (train_loss, val_loss))
-
+            self.print_update(train_loss, val_loss)
 
             # Logging
             # If training is not part of wandb sweeping, log the results for tensorboard and as csv
             if not self.use_wandb:
-                # Write the logs for tensorboard and the csv-file
-                writer.add_scalar("Loss/train", train_loss, epoch)
-                writer.add_scalar("Loss/val", val_loss, epoch)
-
-                with open(self.csv_path, 'a') as file:
-                    file.write(str(epoch) + ',' + str(train_loss) + ',' + str(val_loss) + '\n')
+                self.logging(writer, train_loss, val_loss, epoch)
 
             else:
                 wandb.log({"train_loss": train_loss,
                            "val_loss": val_loss})
 
+            # Perform checkpointing and check for early stopping
+            if not self.continue_training_and_checkpoint(val_loss, model):
+                print(f"No improvement on val_loss detected for {self.stopping_patience} epochs.")
+                print("Stopping training...")
+                break
 
         # Close the writer
         writer.flush()
         writer.close()
 
 
+    def continue_training_and_checkpoint(self, val_loss, model):
+        # Initialize the return value
+        continue_training = True
+
+        # Check if an improvement to the last epoch took place; If yes, reset stagnant epochs
+        if val_loss < self.previous_loss:
+            self.stagnant_epochs = 0
+
+            # Check for new optimum; If yes, update the best_val_loss and checkpoint
+            if val_loss < self.best_val_loss:
+                self.best_val_loss = val_loss
+
+                # Only checkpoint if not used in hyperparameter sweep
+                if not self.use_wandb:
+                    T.save(model.state_dict(), self.weight_path)
+                    print(f"New checkpoint for validation loss. Model weights saved to {self.weight_path}\n")
+
+        # Otherwise increase stagnant epochs and check patience
+        else:
+            self.stagnant_epochs += 1
+
+            # If no improvement took place for the specified number of epochs, stop training
+            if self.stagnant_epochs > self.stopping_patience:
+                continue_training = False
+
+        # Update the previous loss
+        self.previous_loss = val_loss
+
+        return continue_training
 
 
 
@@ -336,3 +361,39 @@ class LearningManager():
 
 
 
+    def print_update(self, train_loss, val_loss):
+        """
+        Function to print an update based on training
+        :param train_loss:          Loss on the training data
+        :param val_loss:            Loss on the validation data
+        """
+
+        # Get the metrics into a string
+        train_str = [str("train_loss = %10.8f | " % train_loss)]
+        val_str = [str("val_loss   = %10.8f | " % val_loss)]
+
+        print("".join(train_str))
+        print("".join(val_str))
+
+
+
+
+    def logging(self, writer, train_loss, val_loss, epoch):
+        """
+        Function to perform logging for Tensorboard and into a CSV-File
+        :param writer:          Instance of torch.utils.tensorboard.SummaryWriter
+        :param train_loss:      Loss on the training data
+        :param val_loss:        Loss on the validation data
+        :param epoch:           Current epoch
+        :return:
+        """
+
+        # Create the outline for the CSV-File
+        out_line = [str(epoch), str(train_loss), str(val_loss)]
+
+        # Write the losses for tensorboard
+        writer.add_scalar("Loss/train", train_loss, epoch)
+        writer.add_scalar("Loss/val", val_loss, epoch)
+
+        with open(self.csv_path, 'a') as file:
+            file.write(",".join(out_line) + '\n')
