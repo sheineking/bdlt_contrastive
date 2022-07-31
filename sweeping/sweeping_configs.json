@@ -41,11 +41,6 @@
                         "min": 0.0,
                         "max": 0.95,
                         "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
-                        "distribution": "uniform"
                     }
                 }
             }
@@ -77,11 +72,6 @@
                     "momentum": {
                         "min": 0.0,
                         "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
                         "distribution": "uniform"
                     },
                     "alpha": {
@@ -124,11 +114,6 @@
                     "momentum": {
                         "min": 0.0,
                         "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
                         "distribution": "uniform"
                     },
                     "eps": {
@@ -236,11 +221,6 @@
                         "max": 0.95,
                         "distribution": "uniform"
                     },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
-                        "distribution": "uniform"
-                    },
                     "alpha": {
                         "min": -0.16251892949777494,
                         "max": -0.01005033585350145,
@@ -286,11 +266,6 @@
                     "momentum": {
                         "min": 0.0,
                         "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
                         "distribution": "uniform"
                     },
                     "eps": {
@@ -339,11 +314,6 @@
                         "min": 0.0,
                         "max": 0.95,
                         "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
-                        "distribution": "uniform"
                     }
                 }
             }
@@ -380,11 +350,6 @@
                     "momentum": {
                         "min": 0.0,
                         "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
                         "distribution": "uniform"
                     },
                     "alpha": {
@@ -434,11 +399,6 @@
                         "max": 0.95,
                         "distribution": "uniform"
                     },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
-                        "distribution": "uniform"
-                    },
                     "eps": {
                         "min": -20.72326583694641,
                         "max": -16.11809565095832,
@@ -485,11 +445,6 @@
                         "min": 0.0,
                         "max": 0.95,
                         "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
-                        "distribution": "uniform"
                     }
                 }
             }
@@ -526,11 +481,6 @@
                     "momentum": {
                         "min": 0.0,
                         "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
                         "distribution": "uniform"
                     },
                     "alpha": {
@@ -578,11 +528,6 @@
                     "momentum": {
                         "min": 0.0,
                         "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "weight_decay": {
-                        "min": 0.0,
-                        "max": 0.15,
                         "distribution": "uniform"
                     },
                     "eps": {

@@ -35,10 +35,6 @@ SWEEP_CONFIGS = {"supervised":
 
                                                          "momentum": {
                                                              "min": 0.0, "max": 0.95,
-                                                             "distribution": "uniform"},
-
-                                                         "weight_decay": {
-                                                             "min": 0.0, "max": 0.15,
                                                              "distribution": "uniform"}
                                                      }}
                                          },
@@ -61,10 +57,6 @@ SWEEP_CONFIGS = {"supervised":
 
                                                          "momentum": {
                                                              "min": 0.0, "max": 0.95,
-                                                             "distribution": "uniform"},
-
-                                                         "weight_decay": {
-                                                             "min": 0.0, "max": 0.15,
                                                              "distribution": "uniform"},
 
                                                          "alpha": {
@@ -95,10 +87,6 @@ SWEEP_CONFIGS = {"supervised":
 
                                                           "momentum": {
                                                               "min": 0.0, "max": 0.95,
-                                                              "distribution": "uniform"},
-
-                                                          "weight_decay": {
-                                                              "min": 0.0, "max": 0.15,
                                                               "distribution": "uniform"},
 
                                                           "eps": {
@@ -179,10 +167,6 @@ SWEEP_CONFIGS = {"supervised":
                                                                 "min": 0.0, "max": 0.95,
                                                                 "distribution": "uniform"},
 
-                                                            "weight_decay": {
-                                                                "min": 0.0, "max": 0.15,
-                                                                "distribution": "uniform"},
-
                                                             "alpha": {
                                                                 "min": math.log(0.85), "max": math.log(0.99),
                                                                 "distribution": "log_uniform"},
@@ -216,10 +200,6 @@ SWEEP_CONFIGS = {"supervised":
                                                                  "min": 0.0, "max": 0.95,
                                                                  "distribution": "uniform"},
 
-                                                             "weight_decay": {
-                                                                 "min": 0.0, "max": 0.15,
-                                                                 "distribution": "uniform"},
-
                                                              "eps": {
                                                                  "min": math.log(1e-9), "max": math.log(1e-7),
                                                                  "distribution": "log_uniform"},
@@ -251,10 +231,6 @@ SWEEP_CONFIGS = {"supervised":
 
                                                            "momentum": {
                                                                "min": 0.0, "max": 0.95,
-                                                               "distribution": "uniform"},
-
-                                                           "weight_decay": {
-                                                               "min": 0.0, "max": 0.15,
                                                                "distribution": "uniform"}
                                                        }}
                                       },
@@ -280,10 +256,6 @@ SWEEP_CONFIGS = {"supervised":
 
                                                            "momentum": {
                                                                "min": 0.0, "max": 0.95,
-                                                               "distribution": "uniform"},
-
-                                                           "weight_decay": {
-                                                               "min": 0.0, "max": 0.15,
                                                                "distribution": "uniform"},
 
                                                            "alpha": {
@@ -319,10 +291,6 @@ SWEEP_CONFIGS = {"supervised":
                                                                 "min": 0.0, "max": 0.95,
                                                                 "distribution": "uniform"},
 
-                                                            "weight_decay": {
-                                                                "min": 0.0, "max": 0.15,
-                                                                "distribution": "uniform"},
-
                                                             "eps": {
                                                                 "min": math.log(1e-9), "max": math.log(1e-7),
                                                                 "distribution": "log_uniform"},
@@ -354,10 +322,6 @@ SWEEP_CONFIGS = {"supervised":
 
                                                            "momentum": {
                                                                "min": 0.0, "max": 0.95,
-                                                               "distribution": "uniform"},
-
-                                                           "weight_decay": {
-                                                               "min": 0.0, "max": 0.15,
                                                                "distribution": "uniform"}
                                                        }}
                                       },
@@ -383,10 +347,6 @@ SWEEP_CONFIGS = {"supervised":
 
                                                            "momentum": {
                                                                "min": 0.0, "max": 0.95,
-                                                               "distribution": "uniform"},
-
-                                                           "weight_decay": {
-                                                               "min": 0.0, "max": 0.15,
                                                                "distribution": "uniform"},
 
                                                            "alpha": {
@@ -420,10 +380,6 @@ SWEEP_CONFIGS = {"supervised":
 
                                                             "momentum": {
                                                                 "min": 0.0, "max": 0.95,
-                                                                "distribution": "uniform"},
-
-                                                            "weight_decay": {
-                                                                "min": 0.0, "max": 0.15,
                                                                 "distribution": "uniform"},
 
                                                             "eps": {
