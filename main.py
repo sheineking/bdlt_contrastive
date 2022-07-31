@@ -18,6 +18,8 @@ def parse_arguments():
     # Learning Manager parameters
     parser.add_argument('--model_name', metavar='model_name', type=str, required=False,
                         help='Name used to identify the model weights and logs')
+    parser.add_argument('--encoder', metavar='encoder', type=str, required=False,
+                        help='For supervised models: Name of a pre-trained contrastive model to be used.')
 
     # Training parameters
     parser.add_argument('--epochs', metavar='epochs', type=int, required=False,
@@ -48,6 +50,8 @@ def update_params(args, configs):
     # Update Learning Manager parameters
     param_dict['learning_manager']['model_name'] = args.model_name if args.model_name is not None \
         else param_dict['learning_manager']['model_name']
+    param_dict['learning_manager']['encoder'] = args.encoder if args.encoder is not None \
+        else None
 
     # Update Training parameters
     param_dict['training']['epochs'] = args.epochs if args.epochs is not None \

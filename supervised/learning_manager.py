@@ -19,6 +19,9 @@ import models as m
 DATASET = {"path": "glue", "name": "mrpc"}
 MODEL_OUT_PATH = os.path.abspath('./models/')
 
+# Path where the weights of the contrastive models are stored
+PRETRAINED_PATH = os.path.abspath("../contrastive/models/weights/")
+
 # ================================================================
 # Preparation
 # ================================================================
@@ -29,10 +32,12 @@ device = T.device("cuda" if T.cuda.is_available() else "cpu")
 # Main class
 # ================================================================
 class LearningManager():
-    def __init__(self,  model_name=None, use_wandb=False):
+    def __init__(self,  model_name=None, encoder="baseline", use_wandb=False):
         """
         Defines the instance of the LearningManager
         :param model_name:      Optional: Name to identify weights and logs; If None, a name is constructed
+        :param encoder:         "baseline" or name of a pretrained contrastive model
+                                (name refers to the weights stored in ../contrastive/model/weights)
         :param use_wandb:       True: Training is conducted as part of wandb sweeping
         """
 
@@ -43,8 +48,12 @@ class LearningManager():
         print("Preparing the tokenizer...")
         self.tokenizer = AutoTokenizer.from_pretrained(m.MODEL_NAME)
 
+        # Load the model as baseline from huggingface or weights from a contrastive pre-trained model.
         print("Preparing the model...")
         self.model = m.SupervisedModel()
+        if encoder != "baseline":
+            self.load_encoder_weights(encoder)
+
         self.loss = T.nn.BCEWithLogitsLoss()
 
         if model_name is None:
@@ -86,7 +95,25 @@ class LearningManager():
                 os.mkdir(path)
 
 
+    def load_encoder_weights(self, encoder):
+        try:
+            # Get the encoder weights
+            encoder_weights = T.load(PRETRAINED_PATH + "/" + encoder + ".pt")
 
+        except:
+            print(f"No weights were found for {encoder} in {PRETRAINED_PATH}")
+            exit(1)
+
+        # Adapt the encoder weights to fit the supervised model
+        model_state_dict = self.model.state_dict()
+        encoder_weights['linear.weight'] = model_state_dict['linear.weight']
+        encoder_weights['linear.bias'] = model_state_dict['linear.bias']
+
+        self.model.load_state_dict(encoder_weights)
+
+        # Freeze the encoder to only train the classifier
+        for param in self.model.encoder.parameters():
+            param.requires_grad = False
 
     # ----------------------------------------------------------------
     # Dataset preparation
@@ -146,7 +173,7 @@ class LearningManager():
     # Training
     # ----------------------------------------------------------------
     def conduct_training(self, epochs=15, batch_size=32, optimizer_name='sgd', lr=0.01, momentum=0, weight_decay=0,
-                         alpha=0.99, eps=1e-08, trust_coef=0.001, stopping_patience=3, subset=None):
+                         alpha=0.99, eps=1e-08, trust_coef=0.001, stopping_patience=3, subset=50):
         """
         Function that performs training on the train_ds and validates on the eval_ds.
         Checkpointing is performed based on validation loss.
