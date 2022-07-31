@@ -74,11 +74,12 @@ class LearningManager():
         self.csv_path = MODEL_OUT_PATH + "/csv_logs/" + model_name + ".csv"
 
         print("Initial preparation completed.")
-        print(f"- Model weights will be saved to: {self.weight_path}")
-        print(f"- Tensorboard logs will be saved to: {self.log_path}")
-        print(f"- CSV logs will be saved to: {self.csv_path}\n\n")
 
         if not use_wandb:
+            print(f"- Model weights will be saved to: {self.weight_path}")
+            print(f"- Tensorboard logs will be saved to: {self.log_path}")
+            print(f"- CSV logs will be saved to: {self.csv_path}\n\n")
+
             # Ensure that the weights and logs folder exist
             self.create_model_folders()
         self.use_wandb = use_wandb
@@ -149,9 +150,8 @@ class LearningManager():
         tokenized_ds = self.dataset.map(lambda example: self.tokenize_function(example),
                                         remove_columns=remove_columns)
 
-        # Preprocess the tokenized dataset and send it to the device
         tokenized_ds = tokenized_ds.rename_column("label", "labels")
-        tokenized_ds = tokenized_ds.with_format("torch", device=device)
+        tokenized_ds = tokenized_ds.with_format("torch")
 
         # Assign the splits
         self.train_ds = tokenized_ds["train"]
@@ -181,7 +181,7 @@ class LearningManager():
     # ----------------------------------------------------------------
     # Training
     # ----------------------------------------------------------------
-    def conduct_training(self, epochs=10, batch_size=2, optimizer_name='sgd', lr=0.1, momentum=0, weight_decay=0,
+    def conduct_training(self, epochs=15, batch_size=4, optimizer_name='sgd', lr=0.1, momentum=0, weight_decay=0,
                          alpha=0.99, eps=1e-08, trust_coef=0.001, stopping_patience=3, subset=None):
         """
         Function that performs training on the train_ds and validates on the eval_ds.
@@ -226,11 +226,11 @@ class LearningManager():
             with open(self.csv_path, 'w') as file:
                 file.write('epoch,train_loss,val_loss,\n')
 
-        # Prepare the two dataloaders
+        # Prepare the two dataloaders (the data is formatted for usage with torch and sent to the device)
         train_data = self.train_ds.select(range(subset)) if subset is not None else self.train_ds
         eval_data = self.eval_ds.select(range(subset)) if subset is not None else self.eval_ds
-        train_dl = DataLoader(train_data, batch_size=batch_size)
-        eval_dl = DataLoader(eval_data, batch_size=batch_size)
+        train_dl = DataLoader(train_data.with_format("torch", device=device), batch_size=batch_size)
+        eval_dl = DataLoader(eval_data.with_format("torch", device=device), batch_size=batch_size)
 
         print("\nPerforming training based on the following parameters:")
         print(f"- Epochs:           {epochs}")
@@ -273,8 +273,9 @@ class LearningManager():
                 break
 
         # Close the writer
-        writer.flush()
-        writer.close()
+        if not self.use_wandb:
+            writer.flush()
+            writer.close()
 
 
     def continue_training_and_checkpoint(self, val_loss, model):

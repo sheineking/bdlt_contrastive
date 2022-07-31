@@ -1,15 +1,24 @@
 import torch as T
 from info_nce import InfoNCE
 
-#Todo: Find good values for epsilon
-PAIRWISE_EPS = 2.0
-TRIPLET_EPS = 2.0
+# =======================================================
+# Epsilon values
+# =======================================================
+# 0.5 was chosen based on experiments on the GLUE dataset. (see ./distance_csv/)
+#  - Note: Pairwise_SGD with batch_size=16; Otherwise the parameters as set in model_configs.json
+#  - Anything >= 0.7 leads to overfitting (the downward spikes in the distance values are on the validation set)
+PAIRWISE_EPS = 0.5
+TRIPLET_EPS = 0.5
 
 class PairwiseLoss(T.nn.Module):
     def __init__(self, eps=PAIRWISE_EPS):
         super(PairwiseLoss, self).__init__()
         self.eps = eps
         self.pdist = T.nn.PairwiseDistance(p=2)
+
+        self.csv_path = "./distance_csv/pairwise_eps" + str(int(self.eps*10)) + ".csv"
+        with open(self.csv_path, "w") as f:
+            f.write("label,dist\n")
 
     def forward(self, embeddings: dict, label, num_sentences=None):
         """
@@ -24,14 +33,25 @@ class PairwiseLoss(T.nn.Module):
         # Calculate the distance
         dist = self.pdist(embeddings["emb1"], embeddings["emb2"])
 
+        self.write_csv(dist, label)
+
         # Calculate the loss (Based on Chopra et al. 2005)
         # - For all instances of label=1, the distance is the loss
         # - For all instances of label=0, it is the max of 0 and the additional distance beyond a hyperparameter epsilon
         positive_cases = T.square(dist)
-        negative_cases = T.square(T.maximum(input=dist - PAIRWISE_EPS, other=T.zeros_like(input=dist)))
+        negative_cases = T.square(T.maximum(input=(PAIRWISE_EPS - dist), other=T.zeros_like(input=dist)))
 
         loss = T.mean((label) * positive_cases + (1-label) * negative_cases)
         return loss
+
+    def write_csv(self, dist, label):
+        batch_size = dist.shape[0]
+        for elem in range(batch_size):
+            l = label[elem].item()
+            d = dist[elem].item()
+
+            with open(self.csv_path, "a") as f:
+                f.write(str(l) + "," + str(d) + "\n")
 
 
 

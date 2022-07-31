@@ -1,6 +1,7 @@
 transformers==4.20.1
 datasets==2.3.2
 wandb==0.12.16
+matplotlib
 
 --extra-index-url https://download.pytorch.org/whl/cu116
 torch
