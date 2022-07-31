@@ -145,7 +145,7 @@ class LearningManager():
     # ----------------------------------------------------------------
     # Training
     # ----------------------------------------------------------------
-    def conduct_training(self, epochs=10, batch_size=32, optimizer_name='sgd', lr=0.01, momentum=0, weight_decay=0,
+    def conduct_training(self, epochs=15, batch_size=32, optimizer_name='sgd', lr=0.01, momentum=0, weight_decay=0,
                          alpha=0.99, eps=1e-08, trust_coef=0.001, stopping_patience=3, subset=None):
         """
         Function that performs training on the train_ds and validates on the eval_ds.
@@ -250,8 +250,9 @@ class LearningManager():
                 break
 
         # Close the writer
-        writer.flush()
-        writer.close()
+        if not self.use_wandb:
+            writer.flush()
+            writer.close()
 
 
     def continue_training_and_checkpoint(self, val_loss, model):
