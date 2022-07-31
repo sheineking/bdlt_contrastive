@@ -8,7 +8,7 @@ SWEEP_CONFIGS = {"supervised":
                      {"default_hyperparameters": {"use_wandb": False,
                                                   "model_name": "Supervised_SGD",
                                                   "epochs": 10,
-                                                  "batch_size": 8,
+                                                  "batch_size": 32,
                                                   "optimizer_name": "rmsprop",
                                                   "lr": 0.1,
                                                   "momentum": 0,

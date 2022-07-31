@@ -5,7 +5,7 @@
         },
         "training": {
             "epochs": 10,
-            "batch_size": 2,
+            "batch_size": 32,
             "optimizer_name": "sgd",
             "lr": 0.01,
             "momentum": 0,
@@ -21,7 +21,7 @@
         },
         "training": {
             "epochs": 10,
-            "batch_size": 2,
+            "batch_size": 32,
             "optimizer_name": "rmsprop",
             "lr": 0.01,
             "momentum": 0,
@@ -37,7 +37,7 @@
         },
         "training": {
             "epochs": 10,
-            "batch_size": 2,
+            "batch_size": 32,
             "optimizer_name": "lars",
             "lr": 0.1,
             "momentum": 0,
