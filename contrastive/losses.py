@@ -16,10 +16,6 @@ class PairwiseLoss(T.nn.Module):
         self.eps = eps
         self.pdist = T.nn.PairwiseDistance(p=2)
 
-        self.csv_path = "./distance_csv/pairwise_eps" + str(int(self.eps*10)) + ".csv"
-        with open(self.csv_path, "w") as f:
-            f.write("label,dist\n")
-
     def forward(self, embeddings: dict, label, num_sentences=None):
         """
         Calculates the pairwise loss based on two embeddings and a label
@@ -32,8 +28,6 @@ class PairwiseLoss(T.nn.Module):
 
         # Calculate the distance
         dist = self.pdist(embeddings["emb1"], embeddings["emb2"])
-
-        self.write_csv(dist, label)
 
         # Calculate the loss (Based on Chopra et al. 2005)
         # - For all instances of label=1, the distance is the loss
