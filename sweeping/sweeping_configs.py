@@ -106,7 +106,7 @@ SWEEP_CONFIGS = {"supervised":
                                                   "train_mode": "pairwise",
                                                   "model_name": "Pairwise_SGD",
                                                   "epochs": 15,
-                                                  "batch_size": 4,
+                                                  "batch_size": 16,
                                                   "optimizer_name": "sgd",
                                                   "lr": 0.1,
                                                   "momentum": 0,
@@ -123,6 +123,9 @@ SWEEP_CONFIGS = {"supervised":
                                                         "parameters": {
                                                             "train_mode":
                                                                 {"values": ["pairwise"]},
+
+                                                            "batch_size":
+                                                                {"values": [16]},
 
                                                             "model_name":
                                                                 {"values": ["Pairwise_SGD_Sweep"]},
@@ -152,6 +155,9 @@ SWEEP_CONFIGS = {"supervised":
                                                         "parameters": {
                                                             "train_mode":
                                                                 {"values": ["pairwise"]},
+
+                                                            "batch_size":
+                                                                {"values": [16]},
 
                                                             "model_name":
                                                                 {"values": ["Pairwise_RMS_Sweep"]},
@@ -186,6 +192,9 @@ SWEEP_CONFIGS = {"supervised":
                                                              "train_mode":
                                                                  {"values": ["pairwise"]},
 
+                                                            "batch_size":
+                                                                {"values": [16]},
+
                                                              "model_name":
                                                                  {"values": ["Pairwise_LARS_Sweep"]},
 
@@ -219,6 +228,9 @@ SWEEP_CONFIGS = {"supervised":
                                                            "train_mode":
                                                                {"values": ["triplet"]},
 
+                                                            "batch_size":
+                                                                {"values": [8]},
+
                                                            "model_name":
                                                                {"values": ["Triplet_SGD_Sweep"]},
 
@@ -243,6 +255,9 @@ SWEEP_CONFIGS = {"supervised":
                                                        "parameters": {
                                                            "train_mode":
                                                                {"values": ["triplet"]},
+
+                                                            "batch_size":
+                                                                {"values": [8]},
 
                                                            "model_name":
                                                                {"values": ["Triplet_RMS_Sweep"]},
@@ -277,6 +292,9 @@ SWEEP_CONFIGS = {"supervised":
                                                             "train_mode":
                                                                 {"values": ["triplet"]},
 
+                                                            "batch_size":
+                                                                {"values": [8]},
+
                                                             "model_name":
                                                                 {"values": ["Triplet_LARS_Sweep"]},
 
@@ -310,6 +328,9 @@ SWEEP_CONFIGS = {"supervised":
                                                            "train_mode":
                                                                {"values": ["infoNCE"]},
 
+                                                           "batch_size":
+                                                               {"values": [4]},
+
                                                            "model_name":
                                                                {"values": ["InfoNCE_SGD_Sweep"]},
 
@@ -334,6 +355,9 @@ SWEEP_CONFIGS = {"supervised":
                                                        "parameters": {
                                                            "train_mode":
                                                                {"values": ["infoNCE"]},
+
+                                                           "batch_size":
+                                                               {"values": [4]},
 
                                                            "model_name":
                                                                {"values": ["InfoNCE_RMS_Sweep"]},
@@ -367,6 +391,9 @@ SWEEP_CONFIGS = {"supervised":
                                                         "parameters": {
                                                             "train_mode":
                                                                 {"values": ["infoNCE"]},
+
+                                                           "batch_size":
+                                                               {"values": [4]},
 
                                                             "model_name":
                                                                 {"values": ["InfoNCE_LARS_Sweep"]},

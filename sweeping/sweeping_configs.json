@@ -136,7 +136,7 @@
             "train_mode": "pairwise",
             "model_name": "Pairwise_SGD",
             "epochs": 15,
-            "batch_size": 4,
+            "batch_size": 16,
             "optimizer_name": "sgd",
             "lr": 0.1,
             "momentum": 0,
@@ -157,6 +157,11 @@
                     "train_mode": {
                         "values": [
                             "pairwise"
+                        ]
+                    },
+                    "batch_size": {
+                        "values": [
+                            16
                         ]
                     },
                     "model_name": {
@@ -199,6 +204,11 @@
                     "train_mode": {
                         "values": [
                             "pairwise"
+                        ]
+                    },
+                    "batch_size": {
+                        "values": [
+                            16
                         ]
                     },
                     "model_name": {
@@ -248,6 +258,11 @@
                             "pairwise"
                         ]
                     },
+                    "batch_size": {
+                        "values": [
+                            16
+                        ]
+                    },
                     "model_name": {
                         "values": [
                             "Pairwise_LARS_Sweep"
@@ -295,6 +310,11 @@
                             "triplet"
                         ]
                     },
+                    "batch_size": {
+                        "values": [
+                            8
+                        ]
+                    },
                     "model_name": {
                         "values": [
                             "Triplet_SGD_Sweep"
@@ -330,6 +350,11 @@
                     "train_mode": {
                         "values": [
                             "triplet"
+                        ]
+                    },
+                    "batch_size": {
+                        "values": [
+                            8
                         ]
                     },
                     "model_name": {
@@ -379,6 +404,11 @@
                             "triplet"
                         ]
                     },
+                    "batch_size": {
+                        "values": [
+                            8
+                        ]
+                    },
                     "model_name": {
                         "values": [
                             "Triplet_LARS_Sweep"
@@ -426,6 +456,11 @@
                             "infoNCE"
                         ]
                     },
+                    "batch_size": {
+                        "values": [
+                            4
+                        ]
+                    },
                     "model_name": {
                         "values": [
                             "InfoNCE_SGD_Sweep"
@@ -461,6 +496,11 @@
                     "train_mode": {
                         "values": [
                             "infoNCE"
+                        ]
+                    },
+                    "batch_size": {
+                        "values": [
+                            4
                         ]
                     },
                     "model_name": {
@@ -508,6 +548,11 @@
                     "train_mode": {
                         "values": [
                             "infoNCE"
+                        ]
+                    },
+                    "batch_size": {
+                        "values": [
+                            4
                         ]
                     },
                     "model_name": {
