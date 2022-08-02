@@ -1,3 +1,5 @@
+import copy
+
 from datasets import load_dataset
 from transformers import AutoTokenizer
 import torch as T
@@ -61,7 +63,8 @@ class LearningManager():
 
         print("Preparing the model...")
         self.train_mode = train_mode
-        self.model = TRAIN_MODES[train_mode]["model"]
+        # Create a deep copy to ensure that training starts fresh
+        self.model = copy.deepcopy(TRAIN_MODES[train_mode]["model"])
         self.loss = TRAIN_MODES[train_mode]["loss"]
 
 
