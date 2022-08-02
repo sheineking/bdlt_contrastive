@@ -17,87 +17,92 @@ SWEEP_CONFIGS = {"supervised":
                                                   "eps": 1e-08,
                                                   "trust_coef": 0.001},
 
-                      "Supervised_SGD": {"sweep_config": {"name": "Supervised_SGD",
-                                                     "method": "bayes",
-                                                     "metric": {
-                                                         "name": "val_loss",
-                                                         "goal": "minimize"},
-                                                     "parameters": {
-                                                         "model_name":
-                                                             {"values": ["Supervised_SGD_Sweep"]},
+                      "Supervised_SGD_finetuned": {"sweep_config": {"name": "Supervised_SGD_finetuned",
+                                                                    "method": "bayes",
+                                                                    "metric": {
+                                                                        "name": "val_loss",
+                                                                        "goal": "minimize"},
+                                                                    "parameters": {
+                                                                        "model_name":
+                                                                            {"values": ["Supervised_SGD_Sweep"]},
 
-                                                         "optimizer_name":
-                                                             {"values": ["sgd"]},
+                                                                        "optimizer_name":
+                                                                            {"values": ["sgd"]},
 
-                                                         "lr": {
-                                                             "min": math.log(0.001), "max": math.log(0.5),
-                                                             "distribution": "log_uniform"},
+                                                                        "lr": {
+                                                                            "min": math.log(0.001), "max": math.log(0.05),
+                                                                            "distribution": "log_uniform"},
 
-                                                         "momentum": {
-                                                             "min": 0.0, "max": 0.95,
-                                                             "distribution": "uniform"}
-                                                     }}
-                                         },
+                                                                        "momentum": {
+                                                                            "min": 0.25, "max": 0.8,
+                                                                            "distribution": "uniform"}
+                                                                    }}
+                                                   },
 
-                      "Supervised_RMS": {"sweep_config": {"name": "Supervised_RMS",
-                                                     "method": "bayes",
-                                                     "metric": {
-                                                         "name": "val_loss",
-                                                         "goal": "minimize"},
-                                                     "parameters": {
-                                                         "model_name":
-                                                             {"values": ["Supervised_RMS_Sweep"]},
+                      "Supervised_RMS_finetuned": {"sweep_config": {"name": "Supervised_RMS_finetuned",
+                                                                    "method": "bayes",
+                                                                    "metric": {
+                                                                        "name": "val_loss",
+                                                                        "goal": "minimize"},
+                                                                    "parameters": {
+                                                                        "model_name":
+                                                                            {"values": ["Supervised_RMS_Sweep"]},
 
-                                                         "optimizer_name":
-                                                             {"values": ["rmsprop"]},
+                                                                        "optimizer_name": {
+                                                                            "values": ["rmsprop"]},
 
-                                                         "lr": {
-                                                             "min": math.log(0.001), "max": math.log(0.5),
-                                                             "distribution": "log_uniform"},
+                                                                        "lr": {
+                                                                            "min": math.log(0.001), "max": math.log(0.01),
+                                                                            "distribution": "log_uniform"},
 
-                                                         "momentum": {
-                                                             "min": 0.0, "max": 0.95,
-                                                             "distribution": "uniform"},
+                                                                        "momentum": {
+                                                                            "min": 0.6, "max": 0.95,
+                                                                            "distribution": "uniform"},
 
-                                                         "alpha": {
-                                                             "min": math.log(0.85), "max": math.log(0.99),
-                                                             "distribution": "log_uniform"},
+                                                                        "weight_decay": {
+                                                                            "min": math.log(0.01), "max": math.log(0.1),
+                                                                            "distribution": "log_uniform"},
 
-                                                         "eps": {
-                                                             "min": math.log(1e-9), "max": math.log(1e-7),
-                                                             "distribution": "log_uniform"}
-                                                     }}
-                                         },
+                                                                        "alpha": {
+                                                                            "min": math.log(0.95), "max": math.log(0.99),
+                                                                            "distribution": "log_uniform"},
 
-                      "Supervised_LARS": {"sweep_config": {"name": "Supervised_LARS",
-                                                      "method": "bayes",
-                                                      "metric": {
-                                                          "name": "val_loss",
-                                                          "goal": "minimize"},
-                                                      "parameters": {
-                                                          "model_name":
-                                                              {"values": ["Supervised_LARS_Sweep"]},
+                                                                        "eps": {
+                                                                            "min": math.log(1e-9), "max": math.log(1e-8),
+                                                                            "distribution": "log_uniform"}
+                                                                    }}
+                                                   },
 
-                                                          "optimizer_name":
-                                                              {"values": ["lars"]},
+                      "Supervised_LARS_finetuned": {"sweep_config": {"name": "Supervised_LARS_finetuned",
+                                                                     "method": "bayes",
+                                                                     "metric": {
+                                                                         "name": "val_loss",
+                                                                         "goal": "minimize"},
 
-                                                          "lr": {
-                                                              "min": math.log(0.001), "max": math.log(0.5),
-                                                              "distribution": "log_uniform"},
+                                                                     "parameters": {
+                                                                         "model_name":
+                                                                             {"values": ["Supervised_LARS_Sweep"]},
 
-                                                          "momentum": {
-                                                              "min": 0.0, "max": 0.95,
-                                                              "distribution": "uniform"},
+                                                                         "optimizer_name":
+                                                                             {"values": ["lars"]},
 
-                                                          "eps": {
-                                                              "min": math.log(1e-9), "max": math.log(1e-7),
-                                                              "distribution": "log_uniform"},
+                                                                         "lr": {
+                                                                             "min": math.log(0.01), "max": math.log(0.4),
+                                                                             "distribution": "log_uniform"},
 
-                                                          "trust_coef": {
-                                                              "min": math.log(0.0005), "max": math.log(0.005),
-                                                              "distribution": "log_uniform"}
-                                                      }}
-                                          }
+                                                                         "momentum": {
+                                                                             "min": 0.3, "max": 0.95,
+                                                                             "distribution": "uniform"},
+
+                                                                         "eps": {
+                                                                             "min": math.log(1e-9), "max": math.log(1e-8),
+                                                                             "distribution": "log_uniform"},
+
+                                                                         "trust_coef": {
+                                                                             "min": math.log(0.001), "max": math.log(0.003),
+                                                                             "distribution": "log_uniform"}
+                                                                     }}
+                                                    }
                       },
 
 

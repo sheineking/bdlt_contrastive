@@ -13,9 +13,9 @@
             "eps": 1e-08,
             "trust_coef": 0.001
         },
-        "Supervised_SGD": {
+        "Supervised_SGD_finetuned": {
             "sweep_config": {
-                "name": "Supervised_SGD",
+                "name": "Supervised_SGD_finetuned",
                 "method": "bayes",
                 "metric": {
                     "name": "val_loss",
@@ -34,20 +34,20 @@
                     },
                     "lr": {
                         "min": -6.907755278982137,
-                        "max": -0.6931471805599453,
+                        "max": -2.995732273553991,
                         "distribution": "log_uniform"
                     },
                     "momentum": {
-                        "min": 0.0,
-                        "max": 0.95,
+                        "min": 0.25,
+                        "max": 0.8,
                         "distribution": "uniform"
                     }
                 }
             }
         },
-        "Supervised_RMS": {
+        "Supervised_RMS_finetuned": {
             "sweep_config": {
-                "name": "Supervised_RMS",
+                "name": "Supervised_RMS_finetuned",
                 "method": "bayes",
                 "metric": {
                     "name": "val_loss",
@@ -66,30 +66,35 @@
                     },
                     "lr": {
                         "min": -6.907755278982137,
-                        "max": -0.6931471805599453,
+                        "max": -4.605170185988091,
                         "distribution": "log_uniform"
                     },
                     "momentum": {
-                        "min": 0.0,
+                        "min": 0.6,
                         "max": 0.95,
                         "distribution": "uniform"
                     },
+                    "weight_decay": {
+                        "min": -4.605170185988091,
+                        "max": -2.3025850929940455,
+                        "distribution": "log_uniform"
+                    },
                     "alpha": {
-                        "min": -0.16251892949777494,
+                        "min": -0.05129329438755058,
                         "max": -0.01005033585350145,
                         "distribution": "log_uniform"
                     },
                     "eps": {
                         "min": -20.72326583694641,
-                        "max": -16.11809565095832,
+                        "max": -18.420680743952367,
                         "distribution": "log_uniform"
                     }
                 }
             }
         },
-        "Supervised_LARS": {
+        "Supervised_LARS_finetuned": {
             "sweep_config": {
-                "name": "Supervised_LARS",
+                "name": "Supervised_LARS_finetuned",
                 "method": "bayes",
                 "metric": {
                     "name": "val_loss",
@@ -107,23 +112,23 @@
                         ]
                     },
                     "lr": {
-                        "min": -6.907755278982137,
-                        "max": -0.6931471805599453,
+                        "min": -4.605170185988091,
+                        "max": -0.916290731874155,
                         "distribution": "log_uniform"
                     },
                     "momentum": {
-                        "min": 0.0,
+                        "min": 0.3,
                         "max": 0.95,
                         "distribution": "uniform"
                     },
                     "eps": {
                         "min": -20.72326583694641,
-                        "max": -16.11809565095832,
+                        "max": -18.420680743952367,
                         "distribution": "log_uniform"
                     },
                     "trust_coef": {
-                        "min": -7.600902459542082,
-                        "max": -5.298317366548036,
+                        "min": -6.907755278982137,
+                        "max": -5.809142990314028,
                         "distribution": "log_uniform"
                     }
                 }
