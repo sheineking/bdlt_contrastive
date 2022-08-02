@@ -13,8 +13,8 @@ pip install -r 'requirements.txt'
 
 
 ## Training
-The training (contrastive and supervised) can be done using the [main.py](./main.py) script by passing the required flags.
-- The mode-flag is used to switch between contrastive and supervised
+The training (contrastive, supervised, and pretrained) can be done using the [main.py](./main.py) script by passing the required flags.
+- The mode-flag is used to switch between contrastive and supervised (also contains the code for pretrained models)
 - The config flag determines the baseline configuration 
   - Refer to model_configs.json for all available configurations. They can be found in the models folder of contrastive and supervised   
 

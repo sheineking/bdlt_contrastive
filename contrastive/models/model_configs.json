@@ -2,7 +2,8 @@
     "Pairwise_SGD": {
         "learning_manager": {
             "train_mode": "pairwise",
-            "model_name": "Pairwise_SGD"
+            "model_name": "Pairwise_SGD",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -19,7 +20,8 @@
     "Pairwise_RMS": {
         "learning_manager": {
             "train_mode": "pairwise",
-            "model_name": "Pairwise_RMS"
+            "model_name": "Pairwise_RMS",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -36,7 +38,8 @@
     "Pairwise_LARS": {
         "learning_manager": {
             "train_mode": "pairwise",
-            "model_name": "Pairwise_LARS"
+            "model_name": "Pairwise_LARS",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -53,7 +56,8 @@
     "Triplet_SGD": {
         "learning_manager": {
             "train_mode": "triplet",
-            "model_name": "Triplet_SGD"
+            "model_name": "Triplet_SGD",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -70,7 +74,8 @@
     "Triplet_RMS": {
         "learning_manager": {
             "train_mode": "triplet",
-            "model_name": "Triplet_RMS"
+            "model_name": "Triplet_RMS",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -87,7 +92,8 @@
     "Triplet_LARS": {
         "learning_manager": {
             "train_mode": "triplet",
-            "model_name": "Triplet_LARS"
+            "model_name": "Triplet_LARS",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -104,7 +110,8 @@
     "InfoNCE_SGD": {
         "learning_manager": {
             "train_mode": "infoNCE",
-            "model_name": "InfoNCE_SGD"
+            "model_name": "InfoNCE_SGD",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -121,7 +128,8 @@
     "InfoNCE_RMS": {
         "learning_manager": {
             "train_mode": "infoNCE",
-            "model_name": "InfoNCE_RMS"
+            "model_name": "InfoNCE_RMS",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -138,7 +146,8 @@
     "InfoNCE_LARS": {
         "learning_manager": {
             "train_mode": "infoNCE",
-            "model_name": "InfoNCE_LARS"
+            "model_name": "InfoNCE_LARS",
+            "encoder": null
         },
         "training": {
             "epochs": 10,

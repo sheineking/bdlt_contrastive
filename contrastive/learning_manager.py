@@ -46,12 +46,13 @@ device = T.device("cuda" if T.cuda.is_available() else "cpu")
 # Main class
 # ================================================================
 class LearningManager():
-    def __init__(self,  train_mode="pairwise", model_name=None, use_wandb=False):
+    def __init__(self,  train_mode="pairwise", model_name=None, encoder=None, use_wandb=False):
         """
         Defines the instance of the LearningManager
         :param train_mode:      ["pairwise", "triple_loss", "infoNCE"]. Refers to the keys in TRAIN_MODES
         :param model_name:      Optional: Name to identify weights and logs; If None, a name is constructed
-        :param use_wandb:           True: Training is conducted as part of wandb sweeping
+        :param encoder:         No effect; Used for compatibility with the supervised modul
+        :param use_wandb:       True: Training is conducted as part of wandb sweeping
         """
 
         print("\n" + "="*50)

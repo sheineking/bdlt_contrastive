@@ -1,7 +1,8 @@
 {
     "Supervised_SGD": {
         "learning_manager": {
-            "model_name": "Supervised_SGD"
+            "model_name": "Supervised_SGD",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -17,7 +18,8 @@
     },
     "Supervised_RMS": {
         "learning_manager": {
-            "model_name": "Supervised_RMS"
+            "model_name": "Supervised_RMS",
+            "encoder": null
         },
         "training": {
             "epochs": 10,
@@ -33,7 +35,25 @@
     },
     "Supervised_LARS": {
         "learning_manager": {
-            "model_name": "Supervised_LARS"
+            "model_name": "Supervised_LARS",
+            "encoder": null
+        },
+        "training": {
+            "epochs": 10,
+            "batch_size": 32,
+            "optimizer_name": "lars",
+            "lr": 0.1,
+            "momentum": 0,
+            "weight_decay": 0,
+            "alpha": 0.99,
+            "eps": 1e-08,
+            "trust_coef": 0.001
+        }
+    },
+    "Pretrained_Pairwise": {
+        "learning_manager": {
+            "model_name": "Pretrained_Pairwise",
+            "encoder": "Pairwise_SGD"
         },
         "training": {
             "epochs": 10,

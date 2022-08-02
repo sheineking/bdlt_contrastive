@@ -10,9 +10,9 @@ python main.py --mode=supervised --config=Supervised_SGD
 ```
 
 2. Classifier on top of pre-trained model
-In order to train a classifier on top of a model that was pre-trained in a contrastive fashion, simply provide the name of the contrastive model under the encoder flag:
+In order to train a classifier on top of a model that was pre-trained in a contrastive fashion, simply provide the name of the contrastive model under the encoder flag and select 'pretrained' as mode:
 ```
-python main.py --mode=supervised --config=Supervised_SGD --encoder=Pairwise_SGD
+python main.py --mode=pretrained --config=Supervised_SGD --encoder=Pairwise_SGD
 ```
 The weights of the encoder will be frozen and only the classifier trained on top.
 

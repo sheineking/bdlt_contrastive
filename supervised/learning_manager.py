@@ -101,7 +101,7 @@ class LearningManager():
             encoder_weights = T.load(PRETRAINED_PATH + "/" + encoder + ".pt")
 
         except:
-            print(f"No weights were found for {encoder} in {PRETRAINED_PATH}")
+            print(f"No weights were found for the encoder '{encoder}' in {PRETRAINED_PATH}")
             exit(1)
 
         # Adapt the encoder weights to fit the supervised model

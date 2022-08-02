@@ -46,6 +46,17 @@ def run_sweep_supervised(use_wandb, model_name, epochs, batch_size, optimizer_na
                                       trust_coef=trust_coef)
 
 
+def run_sweep_pretrained(use_wandb, model_name, encoder, epochs, batch_size, optimizer_name, lr, momentum, weight_decay,
+                         alpha, eps, trust_coef):
+    # Define the learning manager
+    Learning_Manager = l.LearningManager(model_name=model_name, encoder=encoder, use_wandb=use_wandb)
+
+    # Conduct training with the given configuration
+    Learning_Manager.conduct_training(epochs=epochs, batch_size=batch_size, optimizer_name=optimizer_name, lr=lr,
+                                      momentum=momentum, weight_decay=weight_decay, alpha=alpha, eps=eps,
+                                      trust_coef=trust_coef)
+
+
 
 def sweep_agent():
     wandb.init(config=default_hyperparameters, project='big_data_lang_tech', entity='zebby')
@@ -56,7 +67,13 @@ def sweep_agent():
 
     hyperparameters.update({"use_wandb": True})
 
-    sweep_func = run_sweep_supervised if mode == "supervised" else run_sweep_contrastive
+    if mode == "contrastive":
+        sweep_func = run_sweep_contrastive
+    elif mode == "supervised":
+        sweep_func = run_sweep_supervised
+    else:
+        sweep_func = run_sweep_pretrained
+
     sweep_func(**hyperparameters)
 
 
@@ -76,12 +93,12 @@ if __name__ == "__main__":
 
     # Switch directory to import the correct modules
     mode = args.mode
-    if mode == "supervised":
+    if mode == "supervised" or mode == "pretrained":
         switch_directory('../supervised/')
     elif mode == "contrastive":
         switch_directory('../contrastive/')
     else:
-        print("Please provide a valid mode: 'contrastive' or 'supervised ")
+        print("Please provide a valid mode: 'contrastive', 'supervised', or 'pretrained' ")
         exit(1)
 
     # Import the correct learning manager
