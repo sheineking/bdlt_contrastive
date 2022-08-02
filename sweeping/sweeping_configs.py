@@ -139,7 +139,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                 {"values": ["sgd"]},
 
                                                             "lr": {
-                                                                "min": math.log(0.001), "max": math.log(0.02),
+                                                                "min": math.log(0.0001), "max": math.log(0.02),
                                                                 "distribution": "log_uniform"},
 
                                                             "momentum": {
@@ -171,7 +171,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                 {"values": ["rmsprop"]},
 
                                                             "lr": {
-                                                                "min": math.log(0.001), "max": math.log(0.05),
+                                                                "min": math.log(0.0001), "max": math.log(0.05),
                                                                 "distribution": "log_uniform"},
 
                                                             "momentum": {
@@ -207,7 +207,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                  {"values": ["lars"]},
 
                                                              "lr": {
-                                                                 "min": math.log(0.001), "max": math.log(0.5),
+                                                                 "min": math.log(0.0001), "max": math.log(0.5),
                                                                  "distribution": "log_uniform"},
 
                                                              "momentum": {
