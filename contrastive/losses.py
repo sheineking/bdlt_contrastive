@@ -4,11 +4,11 @@ from info_nce import InfoNCE
 # =======================================================
 # Epsilon values
 # =======================================================
-# 0.5 was chosen based on experiments on the GLUE dataset. (see ./distance_csv/)
+# 0.3 was chosen based on experiments on the GLUE dataset. (see ./distance_csv/)
 #  - Note: Pairwise_SGD with batch_size=16; Otherwise the parameters as set in model_configs.json
-#  - Anything >= 0.7 leads to overfitting (the downward spikes in the distance values are on the validation set)
-PAIRWISE_EPS = 0.5
-TRIPLET_EPS = 0.5
+#  - Anything >= 0.5 leads to overfitting (the downward spikes in the distance values are on the validation set)
+PAIRWISE_EPS = 0.3
+TRIPLET_EPS = 0.3
 
 class PairwiseLoss(T.nn.Module):
     def __init__(self, eps=PAIRWISE_EPS):

@@ -139,7 +139,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                 {"values": ["sgd"]},
 
                                                             "lr": {
-                                                                "min": math.log(0.001), "max": math.log(0.5),
+                                                                "min": math.log(0.001), "max": math.log(0.02),
                                                                 "distribution": "log_uniform"},
 
                                                             "momentum": {
@@ -147,7 +147,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                 "distribution": "uniform"},
 
                                                             "weight_decay": {
-                                                                "min": 0.0, "max": 0.15,
+                                                                "min": 0.0, "max": 0.1,
                                                                 "distribution": "uniform"}
                                                         }}
                                        },
@@ -171,7 +171,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                 {"values": ["rmsprop"]},
 
                                                             "lr": {
-                                                                "min": math.log(0.001), "max": math.log(0.5),
+                                                                "min": math.log(0.001), "max": math.log(0.05),
                                                                 "distribution": "log_uniform"},
 
                                                             "momentum": {
@@ -179,11 +179,11 @@ SWEEP_CONFIGS = {"supervised":
                                                                 "distribution": "uniform"},
 
                                                             "alpha": {
-                                                                "min": math.log(0.85), "max": math.log(0.99),
+                                                                "min": math.log(0.95), "max": math.log(0.99),
                                                                 "distribution": "log_uniform"},
 
                                                             "eps": {
-                                                                "min": math.log(1e-9), "max": math.log(1e-7),
+                                                                "min": math.log(1e-9), "max": math.log(1e-8),
                                                                 "distribution": "log_uniform"}
                                                         }}
                                        },
@@ -215,7 +215,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                  "distribution": "uniform"},
 
                                                              "eps": {
-                                                                 "min": math.log(1e-9), "max": math.log(1e-7),
+                                                                 "min": math.log(1e-9), "max": math.log(1e-8),
                                                                  "distribution": "log_uniform"},
 
                                                              "trust_coef": {
