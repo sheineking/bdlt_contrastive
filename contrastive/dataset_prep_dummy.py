@@ -149,8 +149,7 @@ class HardNegativeFinder():
 
 
             # Create the Hasher for the current dataset based on the vocabulary and save the Q-grams
-            # Todo: Increasing the number of signatures will make selection more detailed
-            Hasher = Locality_Sensitive_Hasher(vocab=vocab, num_signatures=100)
+            Hasher = Locality_Sensitive_Hasher(vocab=vocab, num_signatures=300)
 
             # Add both lists and the hasher to the result_dict
             result_dict[pair["name"]] = {"anchors": {"idx": anchor_idx,
@@ -183,7 +182,7 @@ class HardNegativeFinder():
             anchor_idx = ds_dict["anchors"]["idx"]
             candidate_idx = ds_dict["candidates"]["idx"]
 
-            # Initialize a sub_dictionary for the current ds_name
+            # Initialize a sub dictionary for the current ds_name
             ds_match_dict = {}
 
             # For each of the anchor signatures, find matches in the candidate signatures
@@ -199,7 +198,7 @@ class HardNegativeFinder():
                 # Save the dict in the ds_match_dict (key: corresponding anchor idx)
                 ds_match_dict[anchor_idx[i]] = dict(zip(candidate_idx, list(match_vector)))
 
-            # Save the ds_match_dict in the match_dict
+            # Save the ds_match_dict in the negative_dict
             negatives_dict[ds_name] = ds_match_dict
 
         # Set the negatives_dict attribute
@@ -245,7 +244,7 @@ class HardNegativeFinder():
         :param out_path:    Path to the csv that stores the matches
         """
 
-        if not hasattr(self, "match_dict"):
+        if not hasattr(self, "negatives_dict"):
             self.find_negatives()
 
         with open(out_path, "w") as file:
@@ -254,7 +253,7 @@ class HardNegativeFinder():
             file.write(header)
 
 
-        for ds_name, ds_dict in self.match_dict.items():
+        for ds_name, ds_dict in self.negatives_dict.items():
             for anchor_idx, num_match_dict in ds_dict.items():
                 # 1. Get the candidate_idx as a list sorted by number of matches
                 sorted_idx = list(dict(sorted(num_match_dict.items(), key=lambda x:x[1], reverse=True)).keys())
@@ -416,6 +415,6 @@ class Locality_Sensitive_Hasher():
 
 if __name__ == "__main__":
     ds = datasets.load_dataset(path="glue", name="mrpc")
-    finder = HardNegativeFinder(ds=ds)
+    Finder = HardNegativeFinder(ds=ds)
 
-    finder.write_negatives()
+    Finder.write_negatives()
