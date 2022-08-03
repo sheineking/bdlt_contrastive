@@ -113,12 +113,14 @@ class LearningManager():
         """
         self.dataset = load_dataset(**DATASETS[self.train_mode])
 
-        # Todo: Remove for final dataset
-        # Create a dummy set
-        if self.train_mode == "triplet":
-            self.dataset = d.build_triplet_ds(self.dataset)
-        if self.train_mode == "infoNCE":
-            self.dataset = d.build_infoNCE_ds(self.dataset)
+        if self.train_mode != "pairwise":
+            HardNegativePreparer = d.HardNegativePreparer()
+
+            # Create a set of negative
+            if self.train_mode == "triplet":
+                self.dataset = HardNegativePreparer.build_dataset_with_negatives(dataset=self.dataset, n=1)
+            if self.train_mode == "infoNCE":
+                self.dataset = HardNegativePreparer.build_dataset_with_negatives(dataset=self.dataset, n=5)
 
 
         # Determine number of sentences in the dataset
