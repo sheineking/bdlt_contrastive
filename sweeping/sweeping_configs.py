@@ -234,7 +234,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                {"values": ["triplet"]},
 
                                                             "batch_size":
-                                                                {"values": [8]},
+                                                                {"values": [12]},
 
                                                            "model_name":
                                                                {"values": ["Triplet_SGD_Sweep"]},
@@ -262,7 +262,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                {"values": ["triplet"]},
 
                                                             "batch_size":
-                                                                {"values": [8]},
+                                                                {"values": [12]},
 
                                                            "model_name":
                                                                {"values": ["Triplet_RMS_Sweep"]},
@@ -298,7 +298,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                 {"values": ["triplet"]},
 
                                                             "batch_size":
-                                                                {"values": [8]},
+                                                                {"values": [12]},
 
                                                             "model_name":
                                                                 {"values": ["Triplet_LARS_Sweep"]},

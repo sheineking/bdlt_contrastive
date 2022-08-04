@@ -317,7 +317,7 @@
                     },
                     "batch_size": {
                         "values": [
-                            8
+                            12
                         ]
                     },
                     "model_name": {
@@ -359,7 +359,7 @@
                     },
                     "batch_size": {
                         "values": [
-                            8
+                            12
                         ]
                     },
                     "model_name": {
@@ -411,7 +411,7 @@
                     },
                     "batch_size": {
                         "values": [
-                            8
+                            12
                         ]
                     },
                     "model_name": {
