@@ -12,7 +12,7 @@ class HardNegativePreparer():
     This class is used by the contrastive learning_manager to get negative samples for specified sentences.
     It takes the sentences from the csv "Negative_Sentences.csv" created by the HardNegativeFinder
     """
-    def __init__(self, csv_path="Matched_Sentences.csv"):
+    def __init__(self, csv_path="Negative_Sentences_Sig300.csv"):
         self.df = pd.read_csv(csv_path)
 
     def build_dataset_with_negatives(self, dataset: datasets.Dataset, n=1):
