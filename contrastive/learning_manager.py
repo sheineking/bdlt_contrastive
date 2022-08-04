@@ -120,7 +120,7 @@ class LearningManager():
             if self.train_mode == "triplet":
                 self.dataset = HardNegativePreparer.build_dataset_with_negatives(dataset=self.dataset, n=1)
             if self.train_mode == "infoNCE":
-                self.dataset = HardNegativePreparer.build_dataset_with_negatives(dataset=self.dataset, n=5)
+                self.dataset = HardNegativePreparer.build_dataset_with_negatives(dataset=self.dataset, n=4)
 
 
         # Determine number of sentences in the dataset

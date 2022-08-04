@@ -334,7 +334,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                {"values": ["infoNCE"]},
 
                                                            "batch_size":
-                                                               {"values": [4]},
+                                                               {"values": [8]},
 
                                                            "model_name":
                                                                {"values": ["InfoNCE_SGD_Sweep"]},
@@ -362,7 +362,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                {"values": ["infoNCE"]},
 
                                                            "batch_size":
-                                                               {"values": [4]},
+                                                               {"values": [8]},
 
                                                            "model_name":
                                                                {"values": ["InfoNCE_RMS_Sweep"]},
@@ -398,7 +398,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                 {"values": ["infoNCE"]},
 
                                                            "batch_size":
-                                                               {"values": [4]},
+                                                               {"values": [8]},
 
                                                             "model_name":
                                                                 {"values": ["InfoNCE_LARS_Sweep"]},

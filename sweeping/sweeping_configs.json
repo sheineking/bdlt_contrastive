@@ -463,7 +463,7 @@
                     },
                     "batch_size": {
                         "values": [
-                            4
+                            8
                         ]
                     },
                     "model_name": {
@@ -505,7 +505,7 @@
                     },
                     "batch_size": {
                         "values": [
-                            4
+                            8
                         ]
                     },
                     "model_name": {
@@ -557,7 +557,7 @@
                     },
                     "batch_size": {
                         "values": [
-                            4
+                            8
                         ]
                     },
                     "model_name": {
