@@ -439,15 +439,22 @@ SWEEP_CONFIGS = {"supervised":
                                                   "eps": 1e-08,
                                                   "trust_coef": 0.001},
 
-                      "Pretrained_Pairwise_SGD": {"sweep_config": {"name": "Pretrained_Pairwise_SGD",
-                                                                   "method": "bayes",
-                                                                   "metric": {
-                                                                       "name": "val_loss",
-                                                                       "goal": "minimize"},
 
-                                                                   "parameters": {
-                                                                       "model_name":
-                                                                           {"values": ["Pretrained_Pairwise_SGD_Sweep"]},
+                        # Todo: Set the three encoder attributes for Pretrained_Pairwise, Pretrained_Triplet, and
+                        #  Pretrained_InfoNCE based on the name of the model that achieved the lowest
+                        #  validation loss. Same needs to be done in the model_configs.py (in supervised folder)
+
+                        # Todo: Run the sweeping_configs.py script after changing the parameters
+
+                      "Pretrained_Pairwise": {"sweep_config": {"name": "Pretrained_Pairwise",
+                                                               "method": "bayes",
+                                                               "metric": {
+                                                                   "name": "val_loss",
+                                                                   "goal": "minimize"},
+
+                                                               "parameters": {
+                                                                   "model_name":
+                                                                       {"values": ["Pretrained_Pairwise_Sweep"]},
 
                                                                    "encoder":
                                                                        {"values": ["Pairwise_SGD"]},
@@ -463,172 +470,65 @@ SWEEP_CONFIGS = {"supervised":
                                                                    "momentum": {
                                                                        "min": 0.25, "max": 0.8,
                                                                        "distribution": "uniform"}
-                                                                    }}
-                                                   },
+                                                               }}
+                                              },
 
-                      "Pretrained_Pairwise_LARS": {"sweep_config": {"name": "Pretrained_Pairwise_LARS",
-                                                                    "method": "bayes",
-                                                                    "metric": {
-                                                                        "name": "val_loss",
-                                                                        "goal": "minimize"},
+                      "Pretrained_Triplet": {"sweep_config": {"name": "Pretrained_Triplet",
+                                                              "method": "bayes",
+                                                              "metric": {
+                                                                  "name": "val_loss",
+                                                                  "goal": "minimize"},
 
-                                                                    "parameters": {
-                                                                        "model_name":
-                                                                            {"values": ["Pretrained_Pairwise_LARS_Sweep"]},
+                                                              "parameters": {
+                                                                  "model_name":
+                                                                      {"values": [
+                                                                          "Pretrained_Triplet_Sweep"]},
 
-                                                                        "encoder":
-                                                                            {"values": ["Pairwise_SGD"]},
+                                                                  "encoder":
+                                                                      {"values": ["Triplet_SGD"]},
 
-                                                                        "optimizer_name":
-                                                                            {"values": ["lars"]},
+                                                                  "optimizer_name":
+                                                                      {"values": ["sgd"]},
 
-                                                                        "lr": {
-                                                                            "min": math.log(0.01), "max": math.log(0.4),
-                                                                            "distribution": "log_uniform"},
+                                                                  "lr": {
+                                                                      "min": math.log(0.001),
+                                                                      "max": math.log(0.05),
+                                                                      "distribution": "log_uniform"},
 
-                                                                        "momentum": {
-                                                                            "min": 0.3, "max": 0.95,
-                                                                            "distribution": "uniform"},
+                                                                  "momentum": {
+                                                                      "min": 0.25, "max": 0.8,
+                                                                      "distribution": "uniform"}
+                                                              }}
+                                             },
 
-                                                                        "eps": {
-                                                                            "min": math.log(1e-9), "max": math.log(1e-8),
-                                                                            "distribution": "log_uniform"},
 
-                                                                        "trust_coef": {
-                                                                            "min": math.log(0.001), "max": math.log(0.003),
-                                                                            "distribution": "log_uniform"}
-                                                                   }}
-                                                  },
+                      "Pretrained_InfoNCE": {"sweep_config": {"name": "Pretrained_InfoNCE",
+                                                              "method": "bayes",
+                                                              "metric": {
+                                                                  "name": "val_loss",
+                                                                  "goal": "minimize"},
 
-                      "Pretrained_Triplet_SGD": {"sweep_config": {"name": "Pretrained_Triplet_SGD",
-                                                                   "method": "bayes",
-                                                                   "metric": {
-                                                                       "name": "val_loss",
-                                                                       "goal": "minimize"},
+                                                              "parameters": {
+                                                                  "model_name":
+                                                                      {"values": [
+                                                                          "Pretrained_InfoNCE_Sweep"]},
 
-                                                                   "parameters": {
-                                                                       "model_name":
-                                                                           {"values": [
-                                                                               "Pretrained_Triplet_SGD_Sweep"]},
+                                                                  "encoder":
+                                                                      {"values": ["InfoNCE_SGD"]},
 
-                                                                       "encoder":
-                                                                           {"values": ["Triplet_SGD"]},
+                                                                  "optimizer_name":
+                                                                      {"values": ["sgd"]},
 
-                                                                       "optimizer_name":
-                                                                           {"values": ["sgd"]},
+                                                                  "lr": {
+                                                                      "min": math.log(0.001),
+                                                                      "max": math.log(0.05),
+                                                                      "distribution": "log_uniform"},
 
-                                                                       "lr": {
-                                                                           "min": math.log(0.001),
-                                                                           "max": math.log(0.05),
-                                                                           "distribution": "log_uniform"},
-
-                                                                       "momentum": {
-                                                                           "min": 0.25, "max": 0.8,
-                                                                           "distribution": "uniform"}
-                                                                   }}
-                                                  },
-
-                      "Pretrained_Triplet_LARS": {"sweep_config": {"name": "Pretrained_Triplet_LARS",
-                                                                   "method": "bayes",
-                                                                   "metric": {
-                                                                       "name": "val_loss",
-                                                                       "goal": "minimize"},
-
-                                                                   "parameters": {
-                                                                       "model_name":
-                                                                           {"values": [
-                                                                               "Pretrained_Triplet_LARS_Sweep"]},
-
-                                                                       "encoder":
-                                                                           {"values": ["Triplet_SGD"]},
-
-                                                                       "optimizer_name":
-                                                                           {"values": ["lars"]},
-
-                                                                       "lr": {
-                                                                           "min": math.log(0.01), "max": math.log(0.4),
-                                                                           "distribution": "log_uniform"},
-
-                                                                       "momentum": {
-                                                                           "min": 0.3, "max": 0.95,
-                                                                           "distribution": "uniform"},
-
-                                                                       "eps": {
-                                                                           "min": math.log(1e-9),
-                                                                           "max": math.log(1e-8),
-                                                                           "distribution": "log_uniform"},
-
-                                                                       "trust_coef": {
-                                                                           "min": math.log(0.001),
-                                                                           "max": math.log(0.003),
-                                                                           "distribution": "log_uniform"}
-                                                                    }}
-                                                   },
-
-                      "Pretrained_InfoNCE_SGD": {"sweep_config": {"name": "Pretrained_InfoNCE_SGD",
-                                                                  "method": "bayes",
-                                                                  "metric": {
-                                                                      "name": "val_loss",
-                                                                      "goal": "minimize"},
-
-                                                                  "parameters": {
-                                                                      "model_name":
-                                                                          {"values": [
-                                                                              "Pretrained_InfoNCE_SGD_Sweep"]},
-
-                                                                      "encoder":
-                                                                          {"values": ["InfoNCE_SGD"]},
-
-                                                                      "optimizer_name":
-                                                                          {"values": ["sgd"]},
-
-                                                                      "lr": {
-                                                                          "min": math.log(0.001),
-                                                                          "max": math.log(0.05),
-                                                                          "distribution": "log_uniform"},
-
-                                                                      "momentum": {
-                                                                          "min": 0.25, "max": 0.8,
-                                                                          "distribution": "uniform"}
-                                                                  }}
-                                                 },
-
-                      "Pretrained_InfoNCE_LARS": {"sweep_config": {"name": "Pretrained_InfoNCE_LARS",
-                                                                   "method": "bayes",
-                                                                   "metric": {
-                                                                       "name": "val_loss",
-                                                                       "goal": "minimize"},
-
-                                                                   "parameters": {
-                                                                       "model_name":
-                                                                           {"values": [
-                                                                               "Pretrained_InfoNCE_LARS_Sweep"]},
-
-                                                                       "encoder":
-                                                                           {"values": ["InfoNCE_SGD"]},
-
-                                                                       "optimizer_name":
-                                                                           {"values": ["lars"]},
-
-                                                                       "lr": {
-                                                                           "min": math.log(0.01), "max": math.log(0.4),
-                                                                           "distribution": "log_uniform"},
-
-                                                                       "momentum": {
-                                                                           "min": 0.3, "max": 0.95,
-                                                                           "distribution": "uniform"},
-
-                                                                       "eps": {
-                                                                           "min": math.log(1e-9),
-                                                                           "max": math.log(1e-8),
-                                                                           "distribution": "log_uniform"},
-
-                                                                       "trust_coef": {
-                                                                           "min": math.log(0.001),
-                                                                           "max": math.log(0.003),
-                                                                           "distribution": "log_uniform"}
-                                                                   }}
-                                                  }
+                                                                  "momentum": {
+                                                                      "min": 0.25, "max": 0.8,
+                                                                      "distribution": "uniform"}
+                                                              }}
+                                             },
                       }
                  }
 

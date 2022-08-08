@@ -23,9 +23,24 @@ CONFIGS = {"Supervised_SGD": {"learning_manager": {"model_name": "Supervised_SGD
             # ======================================================================
             # Configurations for classifiers on top of pre-trained contrastive models
             # ======================================================================
+           # Todo: Set the three encoder attributes based on the name of the model that achieved the lowest validation
+           #  loss. Same needs to be done in the sweeping_configs.py (in sweeping folder)
+
+            # Todo: Run the sweeping_configs.py script after changing the parameters
+
            "Pretrained_Pairwise": {"learning_manager": {"model_name": "Pretrained_Pairwise",
                                                         "encoder": "Pairwise_SGD"},
-                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "lars", "lr": 0.1,
+                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.01,
+                                                "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
+                                                "trust_coef": 0.001}},
+           "Pretrained_Triplet": {"learning_manager": {"model_name": "Pretrained_Triplet",
+                                                        "encoder": "Triplet_SGD"},
+                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.01,
+                                                "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
+                                                "trust_coef": 0.001}},
+           "Pretrained_InfoNCE": {"learning_manager": {"model_name": "Pretrained_InfoNCE",
+                                                        "encoder": "InfoNCE_SGD"},
+                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.01,
                                                 "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                                 "trust_coef": 0.001}}
            }

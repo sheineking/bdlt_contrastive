@@ -51,6 +51,7 @@ class LearningManager():
         # Load the model as baseline from huggingface or weights from a contrastive pre-trained model.
         print("Preparing the model...")
         self.model = m.SupervisedModel()
+        self.encoder = encoder
         if encoder != "baseline":
             self.load_encoder_weights(encoder)
 
@@ -233,6 +234,7 @@ class LearningManager():
 
 
         print("\nPerforming training based on the following parameters:")
+        print(f"- Encoder:          {self.encoder}")
         print(f"- Epochs:           {epochs}")
         print(f"- Batchsize:        {batch_size}")
         print(f"- Optimizer:        {optimizer}")
