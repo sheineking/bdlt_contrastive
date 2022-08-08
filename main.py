@@ -10,7 +10,7 @@ def parse_arguments():
     # First, define the mode (contrastive, supervised or pretrained) and base configuration to be used
     parser.add_argument('--mode', metavar='mode', type=str, required=True,
                         help='"contrastive", "supervised" or "pretrained". Chooses which kind of training to conduct.')
-    parser.add_argument('--config', metavar='config', type=str, required=True,
+    parser.add_argument('--config', metavar='config', type=str, required=False,
                         help='Name of the base configuration. Used as key for the dictionary saved '
                              'in model_configs.json')
 
@@ -101,8 +101,24 @@ if __name__ == "__main__":
 
     # Parameter Updating
     configs = json.load(open(c.CONFIG_PATH))
-    param_dict = update_params(args, configs)
 
-    # Apply the param_dict
-    Manager = l.LearningManager(**param_dict['learning_manager'])
-    Manager.conduct_training(**param_dict['training'])
+    # Allow for looping over all configs in that mode if no config was provided
+    if args.config is None:
+        config_list = list(configs.keys())
+        print(f"No config-flag was provided. Looping over all available configurations for mode={args.mode}\n\n")
+
+        for config_name in config_list:
+            # Update the configs attribute
+            args.config = config_name
+            param_dict = update_params(args, configs)
+
+            # Apply the param_dict
+            Manager = l.LearningManager(**param_dict['learning_manager'])
+            Manager.conduct_training(**param_dict['training'])
+
+    else:
+        param_dict = update_params(args, configs)
+
+        # Apply the param_dict
+        Manager = l.LearningManager(**param_dict['learning_manager'])
+        Manager.conduct_training(**param_dict['training'])
