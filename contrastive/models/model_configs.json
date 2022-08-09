@@ -6,11 +6,11 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 16,
             "optimizer_name": "sgd",
-            "lr": 0.1,
-            "momentum": 0,
+            "lr": 0.0055,
+            "momentum": 0.7,
             "weight_decay": 0,
             "alpha": 0.99,
             "eps": 1e-08,
@@ -24,14 +24,14 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 16,
             "optimizer_name": "rmsprop",
-            "lr": 0.1,
-            "momentum": 0,
+            "lr": 0.0001,
+            "momentum": 0.1,
             "weight_decay": 0,
-            "alpha": 0.99,
-            "eps": 1e-08,
+            "alpha": 0.95,
+            "eps": 1e-09,
             "trust_coef": 0.001
         }
     },
@@ -42,15 +42,15 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 16,
             "optimizer_name": "lars",
-            "lr": 0.1,
-            "momentum": 0,
+            "lr": 0.0075,
+            "momentum": 0.17,
             "weight_decay": 0,
             "alpha": 0.99,
-            "eps": 1e-08,
-            "trust_coef": 0.001
+            "eps": 6e-09,
+            "trust_coef": 0.005
         }
     },
     "Triplet_SGD": {
@@ -60,11 +60,11 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 8,
             "optimizer_name": "sgd",
-            "lr": 0.1,
-            "momentum": 0,
+            "lr": 0.0015,
+            "momentum": 0.75,
             "weight_decay": 0,
             "alpha": 0.99,
             "eps": 1e-08,
@@ -78,13 +78,13 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 8,
             "optimizer_name": "rmsprop",
-            "lr": 0.1,
-            "momentum": 0,
+            "lr": 0.0015,
+            "momentum": 0.9,
             "weight_decay": 0,
-            "alpha": 0.99,
+            "alpha": 0.9,
             "eps": 1e-08,
             "trust_coef": 0.001
         }
@@ -96,11 +96,11 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 8,
             "optimizer_name": "lars",
-            "lr": 0.1,
-            "momentum": 0,
+            "lr": 0.03,
+            "momentum": 0.85,
             "weight_decay": 0,
             "alpha": 0.99,
             "eps": 1e-08,
@@ -114,11 +114,11 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 4,
             "optimizer_name": "sgd",
-            "lr": 0.1,
-            "momentum": 0,
+            "lr": 0.003,
+            "momentum": 0.55,
             "weight_decay": 0,
             "alpha": 0.99,
             "eps": 1e-08,
@@ -132,14 +132,14 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 4,
             "optimizer_name": "rmsprop",
-            "lr": 0.1,
-            "momentum": 0,
+            "lr": 0.004,
+            "momentum": 0.5,
             "weight_decay": 0,
-            "alpha": 0.99,
-            "eps": 1e-08,
+            "alpha": 0.85,
+            "eps": 3.5e-08,
             "trust_coef": 0.001
         }
     },
@@ -150,15 +150,15 @@
             "encoder": null
         },
         "training": {
-            "epochs": 10,
+            "epochs": 25,
             "batch_size": 4,
             "optimizer_name": "lars",
-            "lr": 0.1,
+            "lr": 0.085,
             "momentum": 0,
             "weight_decay": 0,
             "alpha": 0.99,
-            "eps": 1e-08,
-            "trust_coef": 0.001
+            "eps": 1.5e-09,
+            "trust_coef": 0.0005
         }
     }
 }

@@ -609,9 +609,9 @@
             "eps": 1e-08,
             "trust_coef": 0.001
         },
-        "Pretrained_Pairwise_SGD": {
+        "Pretrained_Pairwise": {
             "sweep_config": {
-                "name": "Pretrained_Pairwise_SGD",
+                "name": "Pretrained_Pairwise",
                 "method": "bayes",
                 "metric": {
                     "name": "val_loss",
@@ -620,12 +620,12 @@
                 "parameters": {
                     "model_name": {
                         "values": [
-                            "Pretrained_Pairwise_SGD_Sweep"
+                            "Pretrained_Pairwise_Sweep"
                         ]
                     },
                     "encoder": {
                         "values": [
-                            "Pairwise_SGD"
+                            "Pairwise_LARS"
                         ]
                     },
                     "optimizer_name": {
@@ -646,9 +646,9 @@
                 }
             }
         },
-        "Pretrained_Pairwise_LARS": {
+        "Pretrained_Triplet": {
             "sweep_config": {
-                "name": "Pretrained_Pairwise_LARS",
+                "name": "Pretrained_Triplet",
                 "method": "bayes",
                 "metric": {
                     "name": "val_loss",
@@ -657,59 +657,12 @@
                 "parameters": {
                     "model_name": {
                         "values": [
-                            "Pretrained_Pairwise_LARS_Sweep"
+                            "Pretrained_Triplet_Sweep"
                         ]
                     },
                     "encoder": {
                         "values": [
-                            "Pairwise_SGD"
-                        ]
-                    },
-                    "optimizer_name": {
-                        "values": [
-                            "lars"
-                        ]
-                    },
-                    "lr": {
-                        "min": -4.605170185988091,
-                        "max": -0.916290731874155,
-                        "distribution": "log_uniform"
-                    },
-                    "momentum": {
-                        "min": 0.3,
-                        "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "eps": {
-                        "min": -20.72326583694641,
-                        "max": -18.420680743952367,
-                        "distribution": "log_uniform"
-                    },
-                    "trust_coef": {
-                        "min": -6.907755278982137,
-                        "max": -5.809142990314028,
-                        "distribution": "log_uniform"
-                    }
-                }
-            }
-        },
-        "Pretrained_Triplet_SGD": {
-            "sweep_config": {
-                "name": "Pretrained_Triplet_SGD",
-                "method": "bayes",
-                "metric": {
-                    "name": "val_loss",
-                    "goal": "minimize"
-                },
-                "parameters": {
-                    "model_name": {
-                        "values": [
-                            "Pretrained_Triplet_SGD_Sweep"
-                        ]
-                    },
-                    "encoder": {
-                        "values": [
-                            "Triplet_SGD"
+                            "Triplet_LARS"
                         ]
                     },
                     "optimizer_name": {
@@ -730,9 +683,9 @@
                 }
             }
         },
-        "Pretrained_Triplet_LARS": {
+        "Pretrained_InfoNCE": {
             "sweep_config": {
-                "name": "Pretrained_Triplet_LARS",
+                "name": "Pretrained_InfoNCE",
                 "method": "bayes",
                 "metric": {
                     "name": "val_loss",
@@ -741,54 +694,7 @@
                 "parameters": {
                     "model_name": {
                         "values": [
-                            "Pretrained_Triplet_LARS_Sweep"
-                        ]
-                    },
-                    "encoder": {
-                        "values": [
-                            "Triplet_SGD"
-                        ]
-                    },
-                    "optimizer_name": {
-                        "values": [
-                            "lars"
-                        ]
-                    },
-                    "lr": {
-                        "min": -4.605170185988091,
-                        "max": -0.916290731874155,
-                        "distribution": "log_uniform"
-                    },
-                    "momentum": {
-                        "min": 0.3,
-                        "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "eps": {
-                        "min": -20.72326583694641,
-                        "max": -18.420680743952367,
-                        "distribution": "log_uniform"
-                    },
-                    "trust_coef": {
-                        "min": -6.907755278982137,
-                        "max": -5.809142990314028,
-                        "distribution": "log_uniform"
-                    }
-                }
-            }
-        },
-        "Pretrained_InfoNCE_SGD": {
-            "sweep_config": {
-                "name": "Pretrained_InfoNCE_SGD",
-                "method": "bayes",
-                "metric": {
-                    "name": "val_loss",
-                    "goal": "minimize"
-                },
-                "parameters": {
-                    "model_name": {
-                        "values": [
-                            "Pretrained_InfoNCE_SGD_Sweep"
+                            "Pretrained_InfoNCE_Sweep"
                         ]
                     },
                     "encoder": {
@@ -810,53 +716,6 @@
                         "min": 0.25,
                         "max": 0.8,
                         "distribution": "uniform"
-                    }
-                }
-            }
-        },
-        "Pretrained_InfoNCE_LARS": {
-            "sweep_config": {
-                "name": "Pretrained_InfoNCE_LARS",
-                "method": "bayes",
-                "metric": {
-                    "name": "val_loss",
-                    "goal": "minimize"
-                },
-                "parameters": {
-                    "model_name": {
-                        "values": [
-                            "Pretrained_InfoNCE_LARS_Sweep"
-                        ]
-                    },
-                    "encoder": {
-                        "values": [
-                            "InfoNCE_SGD"
-                        ]
-                    },
-                    "optimizer_name": {
-                        "values": [
-                            "lars"
-                        ]
-                    },
-                    "lr": {
-                        "min": -4.605170185988091,
-                        "max": -0.916290731874155,
-                        "distribution": "log_uniform"
-                    },
-                    "momentum": {
-                        "min": 0.3,
-                        "max": 0.95,
-                        "distribution": "uniform"
-                    },
-                    "eps": {
-                        "min": -20.72326583694641,
-                        "max": -18.420680743952367,
-                        "distribution": "log_uniform"
-                    },
-                    "trust_coef": {
-                        "min": -6.907755278982137,
-                        "max": -5.809142990314028,
-                        "distribution": "log_uniform"
                     }
                 }
             }

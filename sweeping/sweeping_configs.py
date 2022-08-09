@@ -457,7 +457,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                        {"values": ["Pretrained_Pairwise_Sweep"]},
 
                                                                    "encoder":
-                                                                       {"values": ["Pairwise_SGD"]},
+                                                                       {"values": ["Pairwise_LARS"]},
 
                                                                    "optimizer_name":
                                                                        {"values": ["sgd"]},
@@ -485,7 +485,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                           "Pretrained_Triplet_Sweep"]},
 
                                                                   "encoder":
-                                                                      {"values": ["Triplet_SGD"]},
+                                                                      {"values": ["Triplet_LARS"]},
 
                                                                   "optimizer_name":
                                                                       {"values": ["sgd"]},
