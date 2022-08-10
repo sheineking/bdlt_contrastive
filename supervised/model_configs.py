@@ -5,19 +5,19 @@ import learning_manager as l
 # They are included for easier usage in main.py
 CONFIG_PATH = l.MODEL_OUT_PATH + "/model_configs.json"
 CONFIGS = {"Supervised_SGD": {"learning_manager": {"model_name": "Supervised_SGD", "encoder": None},
-                              "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.01,
-                                           "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
+                              "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.005,
+                                           "momentum": 0.7, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                            "trust_coef": 0.001}},
 
            "Supervised_RMS": {"learning_manager": {"model_name": "Supervised_RMS", "encoder": None},
-                              "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "rmsprop", "lr": 0.01,
-                                           "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
+                              "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "rmsprop", "lr": 0.002,
+                                           "momentum": 0.8, "weight_decay": 0, "alpha": 0.85, "eps": 1.5e-09,
                                            "trust_coef": 0.001}},
 
            "Supervised_LARS": {"learning_manager": {"model_name": "Supervised_LARS", "encoder": None},
-                               "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "lars", "lr": 0.1,
-                                            "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
-                                            "trust_coef": 0.001}},
+                               "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "lars", "lr": 0.285,
+                                            "momentum": 0.3, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
+                                            "trust_coef": 0.00125}},
 
 
             # ======================================================================
@@ -26,7 +26,7 @@ CONFIGS = {"Supervised_SGD": {"learning_manager": {"model_name": "Supervised_SGD
            # Todo: Set the three encoder attributes based on the name of the model that achieved the lowest validation
            #  loss. Same needs to be done in the sweeping_configs.py (in sweeping folder)
 
-            # Todo: Run the sweeping_configs.py script after changing the parameters
+            # Todo: Run the model_configs.py script after changing the parameters
 
            "Pretrained_Pairwise": {"learning_manager": {"model_name": "Pretrained_Pairwise",
                                                         "encoder": "Pairwise_SGD"},
