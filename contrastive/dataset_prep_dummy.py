@@ -472,9 +472,6 @@ class Locality_Sensitive_Hasher():
 
 if __name__ == "__main__":
     ds = datasets.load_dataset(path="glue", name="mrpc")
-    prep = HardNegativePreparer()
-    prep.build_dataset_with_positives_and_negatives(ds)
-
-    # Finder = HardNegativeFinder(ds=ds)
-    # Finder.build_dataset_with_positives_and_negatives()
-    #Finder.write_negatives()
+    Finder = HardNegativeFinder(ds=ds)
+    Finder.build_dataset_with_positives_and_negatives()
+    Finder.write_negatives()
