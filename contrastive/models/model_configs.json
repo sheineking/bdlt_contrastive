@@ -46,7 +46,7 @@
             "batch_size": 16,
             "optimizer_name": "lars",
             "lr": 0.0075,
-            "momentum": 0.17,
+            "momentum": 0.15,
             "weight_decay": 0,
             "alpha": 0.99,
             "eps": 6e-09,

@@ -1,9 +1,8 @@
 import json
-import learning_manager as l
 
 # Note on the configurations: Not all optimizers need all parameters.
 # They are included for easier usage in main.py
-CONFIG_PATH = l.MODEL_OUT_PATH + "/model_configs.json"
+CONFIG_PATH = "./models/model_configs.json"
 CONFIGS = {"Pairwise_SGD": {"learning_manager": {"train_mode": "pairwise", "model_name": "Pairwise_SGD",
                                                  "encoder": None},
                             "training": {"epochs": 25, "batch_size": 16, "optimizer_name": "sgd", "lr": 0.0055,
@@ -19,7 +18,7 @@ CONFIGS = {"Pairwise_SGD": {"learning_manager": {"train_mode": "pairwise", "mode
            "Pairwise_LARS": {"learning_manager": {"train_mode": "pairwise", "model_name": "Pairwise_LARS",
                                                   "encoder": None},
                              "training": {"epochs": 25, "batch_size": 16, "optimizer_name": "lars", "lr": 0.0075,
-                                          "momentum": 0.17, "weight_decay": 0, "alpha": 0.99, "eps": 6e-09,
+                                          "momentum": 0.15, "weight_decay": 0, "alpha": 0.99, "eps": 6e-09,
                                           "trust_coef": 0.005}},
 
 
