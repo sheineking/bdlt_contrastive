@@ -42,13 +42,8 @@ def vis_epoch_distance(csv_name):
     val_0.rename("Val (Label=0)", inplace=True)
     val_1.rename("Val (Label=1)", inplace=True)
 
-    # Define the title
-    #eps = float(csv_name.split("eps")[1].split(".")[0]) / 10
-    #title = f"Margin = {eps}"
-
     # Create the plot
     fig, ax = plt.subplots(figsize=(7.5, 7.5))
-    #ax.set_title(title, fontsize=15)
 
     # Visualize the development
     train_0.plot.line(ax=ax, linewidth=4, linestyle="-", color="black")
@@ -63,8 +58,9 @@ def vis_epoch_distance(csv_name):
     plt.xticks(fontsize=19)
     plt.legend(loc="upper left", fontsize=19)
 
-
-    plt.show()
+    # Save the result
+    eps = csv_name.split("eps")[1].split(".")[0]
+    fig.savefig(f"Distance_eps{eps}.png", dpi=300.0)
 
 
 def vis_distance(csv_name, step_size):
@@ -97,16 +93,12 @@ def vis_distance(csv_name, step_size):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Distance visualization')
 
-    # First, define the mode (contrastive or supervised) and base configuration to be used
+    # Provide the name of the file to be processed
     parser.add_argument('--csv_name', metavar='csv_name', type=str, required=False,
                         help='The CSV-File containing the distance values')
-    parser.add_argument('--step_size', metavar='step_size', type=int, required=False,
-                        help='Number of elements over which to average the distance values')
 
     args = parser.parse_args()
 
     CSV_NAME = args.csv_name if args.csv_name is not None else CSV_NAME
-    STEP_SIZE = args.step_size if args.step_size is not None else STEP_SIZE
-
-    vis_distance(CSV_NAME, STEP_SIZE)
+    vis_epoch_distance(CSV_NAME)
 
