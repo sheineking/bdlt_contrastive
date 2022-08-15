@@ -9,6 +9,7 @@ import wandb
 
 import os
 import time
+from glob import glob
 
 import models as m
 import losses as l
@@ -103,10 +104,55 @@ class LearningManager():
 
 
 
+    def load_dataset(self):
+        """
+        Function to load an already preprocessed dataset from csv.
+        Format shold be:
+        anchor, paraphrase, neg1, neg2, neg3...
+        """
+        data_dir = "../dataset/neg/"
+        train_csvs = glob(data_dir + "*train*.csv")
+        test_csvs = glob(data_dir + "*test*.csv")
+        validation_csvs = glob(data_dir + "*validation*.csv")
+
+        self.dataset = load_dataset("csv", data_files={
+            "train": train_csvs,
+            "test": test_csvs,
+            "validation": validation_csvs})
+
+        if self.train_mode != "pairwise":
+            remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
+            sent_max = 2
+        # Create a set of negative
+        if self.train_mode == "triplet":
+            remove_cols = ["sentence" + str(idx) for idx in range(4, 7)]
+            sent_max = 3
+
+        if self.train_mode == "infoNCE":
+            remove_cols = []
+            sent_max = 6
+
+        
+        self.dataset = self.dataset.remove_columns(remove_cols)
+        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(sent_max)] != "")
+        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(sent_max)] != None)
+
+        # Determine number of sentences in the dataset
+        self.num_sentences = 1
+        features = self.dataset["train"].features
+        while True:
+            try:
+                _ = features['sentence' + str(self.num_sentences)]
+                self.num_sentences += 1
+            except:
+                break
+        # Subtract one from the number of sentences
+        self.num_sentences = self.num_sentences - 1
+
     # ----------------------------------------------------------------
     # Dataset preparation
     # ----------------------------------------------------------------
-    def load_dataset(self):
+    def load_dataset_glue(self):
         """
         Function to load the model specified by dataset_name. Sets the dataset-attribute
         :param dataset_name:    Key in the DATASETS-dictionary
@@ -178,6 +224,8 @@ class LearningManager():
             # Add the tokens_dict to the result_dict and increase the iterator
             result_dict["input" + str(num)] = tokens_dict
 
+        if not "label" in example:
+            result_dict["label"] = 1
         # Return them as a dictionary
         return result_dict
 
