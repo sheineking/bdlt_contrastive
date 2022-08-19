@@ -115,7 +115,18 @@ if __name__ == "__main__":
             # Apply the param_dict
             Manager = l.LearningManager(**param_dict['learning_manager'])
             Manager.conduct_training(**param_dict['training'])
+    elif args.config in ["Pairwise", "Triplet", "InfoNCE"]:
+        config_list = [conf for conf in list(configs.keys()) if args.config in conf]
+        print(f"Looping all configs for {args.config}.")
+        print(config_list)
+        for config_name in config_list:
+            # Update the configs attribute
+            args.config = config_name
+            param_dict = update_params(args, configs)
 
+            # Apply the param_dict
+            Manager = l.LearningManager(**param_dict['learning_manager'])
+            Manager.conduct_training(**param_dict['training'])
     else:
         param_dict = update_params(args, configs)
 

@@ -110,17 +110,27 @@ class LearningManager():
         Format shold be:
         anchor, paraphrase, neg1, neg2, neg3...
         """
-        data_dir = "../dataset/neg/"
-        train_csvs = glob(data_dir + "*train*.csv")
-        test_csvs = glob(data_dir + "*test*.csv")
-        validation_csvs = glob(data_dir + "*validation*.csv")
+        # append = ""
+        # data_dir = "../dataset/neg/*paws"
+        # train_csvs = glob(data_dir + "*train*" + append + ".csv")
+        # test_csvs = glob(data_dir + "*test*" + append + ".csv")
+        # validation_csvs = glob(data_dir + "*validation*" + append + ".csv")
 
-        self.dataset = load_dataset("csv", data_files={
-            "train": train_csvs,
-            "test": test_csvs,
-            "validation": validation_csvs})
+        # self.dataset = load_dataset("csv", data_files={
+        #     "train": train_csvs,
+        #     "test": test_csvs,
+        #     "validation": validation_csvs})
 
-        if self.train_mode != "pairwise":
+        # print(self.dataset.num_rows)
+        # self.dataset = self.dataset.filter(lambda x: x["idx"] < 10000)
+        # print(self.dataset.num_rows)
+
+        
+
+        self.dataset = load_dataset("JoPro/contrastive_paraphrases", use_auth_token=True)
+
+
+        if self.train_mode == "pairwise":
             remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
             sent_max = 2
         # Create a set of negative
@@ -131,7 +141,6 @@ class LearningManager():
         if self.train_mode == "infoNCE":
             remove_cols = []
             sent_max = 6
-
         
         self.dataset = self.dataset.remove_columns(remove_cols)
         self.dataset = self.dataset.filter(lambda example: example["sentence" + str(sent_max)] != "")
