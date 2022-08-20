@@ -1,6 +1,6 @@
 import copy
 
-from datasets import load_dataset
+from datasets import concatenate_datasets, load_dataset
 from transformers import AutoTokenizer
 import torch as T
 from torch.utils.data import DataLoader
@@ -132,31 +132,43 @@ class LearningManager():
 
         if self.train_mode == "pairwise":
             remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
-            sent_max = 2
+            self.num_sentences = 2
+            #
+            # Add copy of dataset which moves sentence3 to sentence2, 
+            # so that negative and positive samples are used.
+            # Additionally, add lable column
+            self.dataset = self.dataset.map(lambda example: {"label": 1})
+            dataset_negatives = copy.deepcopy(self.dataset)
+            # remove paraphrases
+            dataset_negatives = dataset_negatives.remove_columns(["sentence2"])
+            # move negative to position of paraphrase and change label
+            dataset_negatives = dataset_negatives.rename_column("sentence3", "sentence2")
+            dataset_negatives =dataset_negatives.map(lambda example: {"label": 0})
+
+            dataset_negatives = dataset_negatives.remove_columns(remove_cols[1:])
+            self.dataset = self.dataset.remove_columns(remove_cols)
+
+            print(self.dataset)
+            print(dataset_negatives)
+            for split in ['train', 'validation', 'test']:
+
+                self.dataset[split] = concatenate_datasets([self.dataset[split], dataset_negatives[split]]).shuffle(seed=42)
+            print(self.dataset)
+
         # Create a set of negative
         if self.train_mode == "triplet":
             remove_cols = ["sentence" + str(idx) for idx in range(4, 7)]
-            sent_max = 3
+            self.num_sentences = 3
+            self.dataset = self.dataset.remove_columns(remove_cols)
+
 
         if self.train_mode == "infoNCE":
-            remove_cols = []
-            sent_max = 6
+            self.num_sentences = 6
         
-        self.dataset = self.dataset.remove_columns(remove_cols)
-        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(sent_max)] != "")
-        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(sent_max)] != None)
+        # make sure all pairs contain enough samples
+        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(self.num_sentences)] != "")
+        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(self.num_sentences)] != None)
 
-        # Determine number of sentences in the dataset
-        self.num_sentences = 1
-        features = self.dataset["train"].features
-        while True:
-            try:
-                _ = features['sentence' + str(self.num_sentences)]
-                self.num_sentences += 1
-            except:
-                break
-        # Subtract one from the number of sentences
-        self.num_sentences = self.num_sentences - 1
 
     # ----------------------------------------------------------------
     # Dataset preparation
