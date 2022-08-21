@@ -1,10 +1,11 @@
-from datasets import load_dataset
+from datasets import load_dataset, ClassLabel, Value
+
 from transformers import AutoTokenizer
 import torch as T
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torchmetrics import Accuracy, AUROC, F1Score
-
+from glob import glob
 import wandb
 
 import os
@@ -52,6 +53,7 @@ class LearningManager():
         print("Preparing the model...")
         self.model = m.SupervisedModel()
         self.encoder = encoder
+        print(f"Encoder: {encoder}")
         if encoder != "baseline":
             self.load_encoder_weights(encoder)
 
@@ -116,10 +118,21 @@ class LearningManager():
         for param in self.model.encoder.parameters():
             param.requires_grad = False
 
+    def load_dataset(self):
+        """
+        Function to load an already preprocessed dataset from csv.
+        Format shold be:
+        sentence1, sentence2, label
+        """
+        self.dataset = load_dataset("JoPro/supervised_paraphrases", use_auth_token=True)
+
+        self.dataset = self.dataset.cast_column("label",ClassLabel(num_classes=2))
+
+
     # ----------------------------------------------------------------
     # Dataset preparation
     # ----------------------------------------------------------------
-    def load_dataset(self):
+    def load_dataset_glue(self):
         """
         Function that sets the dataset-attribute
         :param dataset_name:    Key in the DATASETS-dictionary
@@ -139,15 +152,16 @@ class LearningManager():
             self.load_dataset()
 
         # Determine removal columns (index and all sentences)
-        remove_columns = ["idx", "sentence1", "sentence2"]
+        remove_columns = ["index", "sentence1", "sentence2", 'path', 'name', 'split']
 
         # Apply tokenization and remove unnecessary columns
         tokenized_ds = self.dataset.map(lambda example: self.tokenize_function(example),
                                         remove_columns=remove_columns)
 
         tokenized_ds = tokenized_ds.rename_column("label", "labels")
-        tokenized_ds = tokenized_ds.with_format("torch")
 
+        tokenized_ds = tokenized_ds.with_format("torch")
+        print(tokenized_ds.column_names)
         # Unsqueeze the label column
         tokenized_ds = tokenized_ds.map(lambda example: {"labels": T.unsqueeze(example["labels"], dim=0)},
                                         remove_columns=["labels"])
