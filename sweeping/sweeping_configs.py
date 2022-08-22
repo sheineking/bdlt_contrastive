@@ -428,7 +428,7 @@ SWEEP_CONFIGS = {"supervised":
                  "pretrained":
                      {"default_hyperparameters": {"use_wandb": False,
                                                   "model_name": "Pretrained_Pairwise",
-                                                  "encoder": "Pairwise_SGD",
+                                                  "encoder": "Pairwise_RMS",
                                                   "epochs": 15,
                                                   "batch_size": 32,
                                                   "optimizer_name": "sgd",
@@ -457,7 +457,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                        {"values": ["Pretrained_Pairwise_Sweep"]},
 
                                                                    "encoder":
-                                                                       {"values": ["Pairwise_SGD"]},
+                                                                       {"values": ["Pairwise_RMS"]},
 
                                                                    "optimizer_name":
                                                                        {"values": ["sgd"]},
@@ -485,7 +485,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                           "Pretrained_Triplet_Sweep"]},
 
                                                                   "encoder":
-                                                                      {"values": ["Triplet_SGD"]},
+                                                                      {"values": ["Triplet_RMS"]},
 
                                                                   "optimizer_name":
                                                                       {"values": ["sgd"]},
@@ -514,7 +514,7 @@ SWEEP_CONFIGS = {"supervised":
                                                                           "Pretrained_InfoNCE_Sweep"]},
 
                                                                   "encoder":
-                                                                      {"values": ["InfoNCE_SGD"]},
+                                                                      {"values": ["InfoNCE_RMS"]},
 
                                                                   "optimizer_name":
                                                                       {"values": ["sgd"]},
