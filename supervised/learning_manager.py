@@ -124,8 +124,8 @@ class LearningManager():
         Format shold be:
         sentence1, sentence2, label
         """
-        self.dataset = load_dataset("JoPro/supervised_paraphrases", use_auth_token=True)
-
+        self.dataset = load_dataset("ContrastivePretrainingProject/supervised_paraphrases", use_auth_token=True)
+        #self.dataset = self.dataset.filter(lambda example: example["index"] < 100)
         self.dataset = self.dataset.cast_column("label",ClassLabel(num_classes=2))
 
 

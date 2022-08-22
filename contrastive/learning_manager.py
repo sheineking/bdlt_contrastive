@@ -127,7 +127,7 @@ class LearningManager():
 
         
 
-        self.dataset = load_dataset("JoPro/contrastive_paraphrases", use_auth_token=True)
+        self.dataset = load_dataset("ContrastivePretrainingProject/contrastive_paraphrases", use_auth_token=True)
 
 
         if self.train_mode == "pairwise":
