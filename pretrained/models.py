@@ -17,9 +17,9 @@ class PretrainedModel(T.nn.Module):
         # Encoder
         self.encoder = AutoModel.from_pretrained(MODEL_NAME)
 
-        # Cosine similarity and output layer
+        # Linear layer and cosine similarity as output
+        self.linear = T.nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE//2)
         self.cosine = T.nn.CosineSimilarity(dim=1, eps=1e-6)
-        self.linear = T.nn.Linear(HIDDEN_SIZE, 1)
 
 
 
@@ -58,11 +58,13 @@ class PretrainedModel(T.nn.Module):
         emb1 = self.feed(batch["input1"])
         emb2 = self.feed(batch["input2"])
 
-        # Apply the cosine similarity and the linear layer
-        cos = self.cosine(emb1, emb2)
-        logits = self.linear(cos)
+        # Apply the linear layer and return the cosine similarity
+        logits1 = self.linear(emb1)
+        logits2 = self.linear(emb2)
 
-        return logits
+        cos = self.cosine(logits1, logits2)
+
+        return T.unsqueeze(cos, -1)
 
 
 
