@@ -5,38 +5,38 @@ import json
 CONFIG_PATH = "./models/model_configs.json"
 CONFIGS = {"Pairwise_SGD": {"learning_manager": {"train_mode": "pairwise", "model_name": "Pairwise_SGD",
                                                  "encoder": None},
-                            "training": {"epochs": 25, "batch_size": 16, "optimizer_name": "sgd", "lr": 0.0055,
+                            "training": {"epochs": 10, "batch_size": 16, "optimizer_name": "sgd", "lr": 0.0055,
                                          "momentum": 0.7, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                          "trust_coef": 0.001}},
 
            "Pairwise_RMS": {"learning_manager": {"train_mode": "pairwise", "model_name": "Pairwise_RMS",
                                                  "encoder": None},
-                            "training": {"epochs": 25, "batch_size": 16, "optimizer_name": "rmsprop", "lr": 0.0001,
+                            "training": {"epochs": 10, "batch_size": 16, "optimizer_name": "rmsprop", "lr": 0.0001,
                                          "momentum": 0.1, "weight_decay": 0, "alpha": 0.95, "eps": 1e-09,
                                          "trust_coef": 0.001}},
 
            "Pairwise_LARS": {"learning_manager": {"train_mode": "pairwise", "model_name": "Pairwise_LARS",
                                                   "encoder": None},
-                             "training": {"epochs": 25, "batch_size": 16, "optimizer_name": "lars", "lr": 0.0075,
+                             "training": {"epochs": 10, "batch_size": 16, "optimizer_name": "lars", "lr": 0.0075,
                                           "momentum": 0.15, "weight_decay": 0, "alpha": 0.99, "eps": 6e-09,
                                           "trust_coef": 0.005}},
 
 
            "Triplet_SGD": {"learning_manager": {"train_mode": "triplet", "model_name": "Triplet_SGD",
                                                 "encoder": None},
-                           "training": {"epochs": 25, "batch_size": 8, "optimizer_name": "sgd", "lr": 0.0015,
+                           "training": {"epochs": 10, "batch_size": 8, "optimizer_name": "sgd", "lr": 0.0015,
                                         "momentum": 0.75, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                         "trust_coef": 0.001}},
 
            "Triplet_RMS": {"learning_manager": {"train_mode": "triplet", "model_name": "Triplet_RMS",
                                                 "encoder": None},
-                           "training": {"epochs": 25, "batch_size": 8, "optimizer_name": "rmsprop", "lr": 0.0015,
+                           "training": {"epochs": 10, "batch_size": 8, "optimizer_name": "rmsprop", "lr": 0.0015,
                                         "momentum": 0.9, "weight_decay": 0, "alpha": 0.9, "eps": 1e-08,
                                         "trust_coef": 0.001}},
 
            "Triplet_LARS": {"learning_manager": {"train_mode": "triplet", "model_name": "Triplet_LARS",
                                                  "encoder": None},
-                            "training": {"epochs": 25, "batch_size": 8, "optimizer_name": "lars", "lr": 0.03,
+                            "training": {"epochs": 10, "batch_size": 8, "optimizer_name": "lars", "lr": 0.03,
                                          "momentum": 0.85, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                          "trust_coef": 0.001}},
 
@@ -44,19 +44,19 @@ CONFIGS = {"Pairwise_SGD": {"learning_manager": {"train_mode": "pairwise", "mode
 
            "InfoNCE_SGD": {"learning_manager": {"train_mode": "infoNCE", "model_name": "InfoNCE_SGD",
                                                 "encoder": None},
-                           "training": {"epochs": 25, "batch_size": 4, "optimizer_name": "sgd", "lr": 0.003,
+                           "training": {"epochs": 10, "batch_size": 4, "optimizer_name": "sgd", "lr": 0.003,
                                         "momentum": 0.55, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                         "trust_coef": 0.001}},
 
            "InfoNCE_RMS": {"learning_manager": {"train_mode": "infoNCE", "model_name": "InfoNCE_RMS",
                                                 "encoder": None},
-                           "training": {"epochs": 25, "batch_size": 4, "optimizer_name": "rmsprop", "lr": 0.004,
+                           "training": {"epochs": 10, "batch_size": 4, "optimizer_name": "rmsprop", "lr": 0.004,
                                         "momentum": 0.5, "weight_decay": 0, "alpha": 0.85, "eps": 3.5e-08,
                                         "trust_coef": 0.001}},
 
            "InfoNCE_LARS": {"learning_manager": {"train_mode": "infoNCE", "model_name": "InfoNCE_LARS",
                                                  "encoder": None},
-                            "training": {"epochs": 25, "batch_size": 4, "optimizer_name": "lars", "lr": 0.085,
+                            "training": {"epochs": 10, "batch_size": 4, "optimizer_name": "lars", "lr": 0.085,
                                          "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1.5e-09,
                                          "trust_coef": 0.0005}},
            }

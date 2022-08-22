@@ -1,9 +1,8 @@
 import json
-import learning_manager as l
 
 # Note on the configurations: Not all optimizers need all parameters.
 # They are included for easier usage in main.py
-CONFIG_PATH = l.MODEL_OUT_PATH + "/model_configs.json"
+CONFIG_PATH = "./models/model_configs.json"
 CONFIGS = {"Supervised_SGD": {"learning_manager": {"model_name": "Supervised_SGD", "encoder": None},
                               "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.005,
                                            "momentum": 0.7, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
@@ -17,32 +16,7 @@ CONFIGS = {"Supervised_SGD": {"learning_manager": {"model_name": "Supervised_SGD
            "Supervised_LARS": {"learning_manager": {"model_name": "Supervised_LARS", "encoder": None},
                                "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "lars", "lr": 0.285,
                                             "momentum": 0.3, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
-                                            "trust_coef": 0.00125}},
-
-
-            # ======================================================================
-            # Configurations for classifiers on top of pre-trained contrastive models
-            # ======================================================================
-           # Todo: Set the three encoder attributes based on the name of the model that achieved the lowest validation
-           #  loss. Same needs to be done in the sweeping_configs.py (in sweeping folder)
-
-            # Todo: Run the model_configs.py script after changing the parameters
-
-           "Pretrained_Pairwise": {"learning_manager": {"model_name": "Pretrained_Pairwise",
-                                                        "encoder": "Pairwise_SGD"},
-                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.01,
-                                                "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
-                                                "trust_coef": 0.001}},
-           "Pretrained_Triplet": {"learning_manager": {"model_name": "Pretrained_Triplet",
-                                                        "encoder": "Triplet_SGD"},
-                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.01,
-                                                "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
-                                                "trust_coef": 0.001}},
-           "Pretrained_InfoNCE": {"learning_manager": {"model_name": "Pretrained_InfoNCE",
-                                                        "encoder": "InfoNCE_SGD"},
-                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.01,
-                                                "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
-                                                "trust_coef": 0.001}}
+                                            "trust_coef": 0.00125}}
            }
 
 

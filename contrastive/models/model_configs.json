@@ -6,7 +6,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 16,
             "optimizer_name": "sgd",
             "lr": 0.0055,
@@ -24,7 +24,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 16,
             "optimizer_name": "rmsprop",
             "lr": 0.0001,
@@ -42,7 +42,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 16,
             "optimizer_name": "lars",
             "lr": 0.0075,
@@ -60,7 +60,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 8,
             "optimizer_name": "sgd",
             "lr": 0.0015,
@@ -78,7 +78,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 8,
             "optimizer_name": "rmsprop",
             "lr": 0.0015,
@@ -96,7 +96,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 8,
             "optimizer_name": "lars",
             "lr": 0.03,
@@ -114,7 +114,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 4,
             "optimizer_name": "sgd",
             "lr": 0.003,
@@ -132,7 +132,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 4,
             "optimizer_name": "rmsprop",
             "lr": 0.004,
@@ -150,7 +150,7 @@
             "encoder": null
         },
         "training": {
-            "epochs": 25,
+            "epochs": 10,
             "batch_size": 4,
             "optimizer_name": "lars",
             "lr": 0.085,

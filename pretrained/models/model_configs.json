@@ -5,7 +5,7 @@
             "encoder": "Pairwise_RMS"
         },
         "training": {
-            "epochs": 20,
+            "epochs": 10,
             "batch_size": 32,
             "optimizer_name": "sgd",
             "lr": 0.01,
@@ -22,7 +22,7 @@
             "encoder": "Triplet_RMS"
         },
         "training": {
-            "epochs": 20,
+            "epochs": 10,
             "batch_size": 32,
             "optimizer_name": "sgd",
             "lr": 0.01,
@@ -39,7 +39,7 @@
             "encoder": "InfoNCE_RMS"
         },
         "training": {
-            "epochs": 20,
+            "epochs": 10,
             "batch_size": 32,
             "optimizer_name": "sgd",
             "lr": 0.01,
