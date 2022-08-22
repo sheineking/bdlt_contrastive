@@ -1,6 +1,6 @@
 import copy
 
-from datasets import load_dataset
+from datasets import concatenate_datasets, load_dataset
 from transformers import AutoTokenizer
 import torch as T
 from torch.utils.data import DataLoader
@@ -9,6 +9,7 @@ import wandb
 
 import os
 import time
+from glob import glob
 
 import models as m
 import losses as l
@@ -103,10 +104,76 @@ class LearningManager():
 
 
 
+    def load_dataset(self):
+        """
+        Function to load an already preprocessed dataset from csv.
+        Format shold be:
+        anchor, paraphrase, neg1, neg2, neg3...
+        """
+        # append = ""
+        # data_dir = "../dataset/neg/*paws"
+        # train_csvs = glob(data_dir + "*train*" + append + ".csv")
+        # test_csvs = glob(data_dir + "*test*" + append + ".csv")
+        # validation_csvs = glob(data_dir + "*validation*" + append + ".csv")
+
+        # self.dataset = load_dataset("csv", data_files={
+        #     "train": train_csvs,
+        #     "test": test_csvs,
+        #     "validation": validation_csvs})
+
+        # print(self.dataset.num_rows)
+        # self.dataset = self.dataset.filter(lambda x: x["idx"] < 10000)
+        # print(self.dataset.num_rows)
+
+        
+
+        self.dataset = load_dataset("ContrastivePretrainingProject/contrastive_paraphrases", use_auth_token=True)
+
+
+        if self.train_mode == "pairwise":
+            remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
+            self.num_sentences = 2
+            #
+            # Add copy of dataset which moves sentence3 to sentence2, 
+            # so that negative and positive samples are used.
+            # Additionally, add lable column
+            self.dataset = self.dataset.map(lambda example: {"label": 1})
+            dataset_negatives = copy.deepcopy(self.dataset)
+            # remove paraphrases
+            dataset_negatives = dataset_negatives.remove_columns(["sentence2"])
+            # move negative to position of paraphrase and change label
+            dataset_negatives = dataset_negatives.rename_column("sentence3", "sentence2")
+            dataset_negatives =dataset_negatives.map(lambda example: {"label": 0})
+
+            dataset_negatives = dataset_negatives.remove_columns(remove_cols[1:])
+            self.dataset = self.dataset.remove_columns(remove_cols)
+
+            print(self.dataset)
+            print(dataset_negatives)
+            for split in ['train', 'validation', 'test']:
+
+                self.dataset[split] = concatenate_datasets([self.dataset[split], dataset_negatives[split]]).shuffle(seed=42)
+            print(self.dataset)
+
+        # Create a set of negative
+        if self.train_mode == "triplet":
+            remove_cols = ["sentence" + str(idx) for idx in range(4, 7)]
+            self.num_sentences = 3
+            self.dataset = self.dataset.remove_columns(remove_cols)
+
+
+        if self.train_mode == "infoNCE":
+            self.num_sentences = 6
+        
+        # make sure all pairs contain enough samples
+        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(self.num_sentences)] != "")
+        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(self.num_sentences)] != None)
+
+
     # ----------------------------------------------------------------
     # Dataset preparation
     # ----------------------------------------------------------------
-    def load_dataset(self):
+    def load_dataset_glue(self):
         """
         Function to load the model specified by dataset_name. Sets the dataset-attribute
         :param dataset_name:    Key in the DATASETS-dictionary
@@ -137,7 +204,6 @@ class LearningManager():
 
 
 
-    # Todo: Adapt this to our dataset
     # Source: https://huggingface.co/docs/transformers/training
     def tokenize_data(self):
         """
@@ -178,6 +244,8 @@ class LearningManager():
             # Add the tokens_dict to the result_dict and increase the iterator
             result_dict["input" + str(num)] = tokens_dict
 
+        if not "label" in example:
+            result_dict["label"] = 1
         # Return them as a dictionary
         return result_dict
 
@@ -187,7 +255,7 @@ class LearningManager():
     # ----------------------------------------------------------------
     # Training
     # ----------------------------------------------------------------
-    def conduct_training(self, epochs=25, batch_size=16, optimizer_name='sgd', lr=0.0055, momentum=0.7, weight_decay=0,
+    def conduct_training(self, epochs=15, batch_size=16, optimizer_name='sgd', lr=0.0055, momentum=0.7, weight_decay=0,
                          alpha=0.99, eps=1e-08, trust_coef=0.001, stopping_patience=3, subset=None):
         """
         Function that performs training on the train_ds and validates on the eval_ds.

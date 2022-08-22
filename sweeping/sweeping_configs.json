@@ -598,7 +598,7 @@
         "default_hyperparameters": {
             "use_wandb": false,
             "model_name": "Pretrained_Pairwise",
-            "encoder": "Pairwise_SGD",
+            "encoder": "Pairwise_RMS",
             "epochs": 15,
             "batch_size": 32,
             "optimizer_name": "sgd",
@@ -625,7 +625,7 @@
                     },
                     "encoder": {
                         "values": [
-                            "Pairwise_LARS"
+                            "Pairwise_RMS"
                         ]
                     },
                     "optimizer_name": {
@@ -662,7 +662,7 @@
                     },
                     "encoder": {
                         "values": [
-                            "Triplet_LARS"
+                            "Triplet_RMS"
                         ]
                     },
                     "optimizer_name": {
@@ -699,7 +699,7 @@
                     },
                     "encoder": {
                         "values": [
-                            "InfoNCE_SGD"
+                            "InfoNCE_RMS"
                         ]
                     },
                     "optimizer_name": {

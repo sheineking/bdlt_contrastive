@@ -93,10 +93,13 @@ if __name__ == "__main__":
 
     # Switch directory to import the correct modules
     mode = args.mode
-    if mode == "supervised" or mode == "pretrained":
+    if mode == "supervised":
         switch_directory('../supervised/')
     elif mode == "contrastive":
         switch_directory('../contrastive/')
+    elif mode == "pretrained":
+        switch_directory('../pretrained/')
+
     else:
         print("Please provide a valid mode: 'contrastive', 'supervised', or 'pretrained' ")
         exit(1)

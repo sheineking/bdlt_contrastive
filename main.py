@@ -86,11 +86,14 @@ if __name__ == "__main__":
     args = parse_arguments()
 
     # Switch directory to import the correct modules
-    if args.mode == "supervised" or args.mode == "pretrained":
+    if args.mode == "supervised":
         switch_directory('./supervised/')
 
     elif args.mode == "contrastive":
         switch_directory('./contrastive/')
+
+    elif args.mode == "pretrained":
+        switch_directory('./pretrained/')
 
     else:
         print("Please provide a valid mode: 'contrastive', 'supervised' or 'pretrained' ")
@@ -115,7 +118,18 @@ if __name__ == "__main__":
             # Apply the param_dict
             Manager = l.LearningManager(**param_dict['learning_manager'])
             Manager.conduct_training(**param_dict['training'])
+    elif args.config in ["Pairwise", "Triplet", "InfoNCE"]:
+        config_list = [conf for conf in list(configs.keys()) if args.config in conf]
+        print(f"Looping all configs for {args.config}.")
+        print(config_list)
+        for config_name in config_list:
+            # Update the configs attribute
+            args.config = config_name
+            param_dict = update_params(args, configs)
 
+            # Apply the param_dict
+            Manager = l.LearningManager(**param_dict['learning_manager'])
+            Manager.conduct_training(**param_dict['training'])
     else:
         param_dict = update_params(args, configs)
 

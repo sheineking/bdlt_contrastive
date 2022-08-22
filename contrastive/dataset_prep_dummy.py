@@ -3,7 +3,6 @@ import pandas as pd
 import csv
 import numpy as np
 from random import shuffle
-from parrot import Parrot
 import torch
 # =============================================================
 # Hard negative mining
@@ -53,71 +52,6 @@ class HardNegativePreparer():
         sentences = row[columns].values.tolist()[0]
         result_dict = dict(zip(["sentence" + str(idx + 3) for idx in range(n)], sentences))
         return result_dict
-    
-
-    def build_dataset_with_positives_and_negatives(self, dataset: datasets.Dataset, n=1):
-        """
-        :param dataset: Dataset with two sentences and a label
-        :param n:       Number of negatives to add
-        :return:        Augmented Dataset. Negative labeled Sentences get one positive paraphrase added and are filled to reach n negatives
-                        For already positive pairs, only negatives are created.
-        """
-        # Filter only negative samples, for which positive is created
-        #filtered_ds = dataset.filter(lambda x: x["label"] == 0)
-
-        augmented_with_paraphrases = generate_paraphrases(dataset)
-        augmented_with_paraphrases.to_csv("dataset_with_para.csv")
-        return
-
-
-        # Add the hard negatives to each ds separately
-        train_ds = augmented_with_paraphrases["train"].map(lambda x: self.get_hard_negatives(sen_id=x["idx"], n=n, dataset="train"))
-        val_ds = augmented_with_paraphrases["validation"].map(lambda x: self.get_hard_negatives(sen_id=x["idx"], n=n, dataset="val"))
-        test_ds = augmented_with_paraphrases["test"].map(lambda x: self.get_hard_negatives(sen_id=x["idx"], n=n, dataset="test"))
-
-        # Combine the three datasets into one DatasetDict and return it
-        return datasets.DatasetDict({"train": train_ds, "validation": val_ds, "test": test_ds})
-
-
-
-def paraphrase(parrot, row):
-    '''
-    :param parrot: Instance of Parrot paraphrase generator
-    :param row: dataset row with one anchor sentence and one negative paraphrase sample
-    :return:    dataset row with the anchor, one positive sample and the negative sample moved to column "sen_2"
-    '''
-    print(row["index"])
-    if row["label"] == 1:
-        row["sen_2"] = ""
-        return row
-    row["sen_2"] = row["sentence2"]
-    row["sen_1"] = parrot.augment(row["sentence1"])
-    return row
-
-def generate_paraphrases(dataset: datasets.Dataset):
-    
-    #uncomment to get reproducable paraphrase generations
-    def random_state(seed):
-        torch.manual_seed(seed)
-        if torch.cuda.is_available():
-            torch.cuda.manual_seed_all(seed)
-
-        random_state(1234)
-    
-
-    parrot = Parrot(model_tag="prithivida/parrot_paraphraser_on_T5", use_gpu=False)
-    out = []
-    for row in dataset:
-        out_row= paraphrase(parrot, row)
-        out.append(out_row)
-    #dataset = dataset.map(lambda x: paraphrase(parrot, x), num_proc=1)
-
-    return dataset
-
-
-
-
-
 
 def construct_q_gram_set(string: str, q=3, q_padding=False):
     s = set()
@@ -472,6 +406,9 @@ class Locality_Sensitive_Hasher():
 
 if __name__ == "__main__":
     ds = datasets.load_dataset(path="glue", name="mrpc")
+    prep = HardNegativePreparer()
+    prep.build_dataset_with_positives_and_negatives(ds)
+
     Finder = HardNegativeFinder(ds=ds)
     Finder.build_dataset_with_positives_and_negatives()
     Finder.write_negatives()

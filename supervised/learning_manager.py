@@ -1,10 +1,11 @@
-from datasets import load_dataset
+from datasets import load_dataset, ClassLabel, Value
+
 from transformers import AutoTokenizer
 import torch as T
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torchmetrics import Accuracy, AUROC, F1Score
-
+from glob import glob
 import wandb
 
 import os
@@ -52,6 +53,7 @@ class LearningManager():
         print("Preparing the model...")
         self.model = m.SupervisedModel()
         self.encoder = encoder
+        print(f"Encoder: {encoder}")
         if encoder != "baseline":
             self.load_encoder_weights(encoder)
 
@@ -116,10 +118,27 @@ class LearningManager():
         for param in self.model.encoder.parameters():
             param.requires_grad = False
 
+    def load_dataset(self):
+        """
+        Function to load an already preprocessed dataset from csv.
+        Format shold be:
+        sentence1, sentence2, label
+        """
+
+        # Load the glue dataset if used in sweeping
+        if self.use_wandb:
+            self.load_dataset_glue()
+
+        else:
+          self.dataset = load_dataset("ContrastivePretrainingProject/supervised_paraphrases", use_auth_token=True)
+          #self.dataset = self.dataset.filter(lambda example: example["index"] < 100)
+          self.dataset = self.dataset.cast_column("label",ClassLabel(num_classes=2))
+
+
     # ----------------------------------------------------------------
     # Dataset preparation
     # ----------------------------------------------------------------
-    def load_dataset(self):
+    def load_dataset_glue(self):
         """
         Function that sets the dataset-attribute
         :param dataset_name:    Key in the DATASETS-dictionary
@@ -128,7 +147,6 @@ class LearningManager():
 
 
 
-    # Todo: Adapt this to our dataset
     # Source: https://huggingface.co/docs/transformers/training
     def tokenize_data(self):
         """
@@ -139,7 +157,8 @@ class LearningManager():
             self.load_dataset()
 
         # Determine removal columns (index and all sentences)
-        remove_columns = ["idx", "sentence1", "sentence2"]
+        remove_columns = ["idx", "sentence1", "sentence2"] if self.use_wandb \
+            else ["index", "sentence1", "sentence2", 'path', 'name', 'split']
 
         # Apply tokenization and remove unnecessary columns
         tokenized_ds = self.dataset.map(lambda example: self.tokenize_function(example),
@@ -173,7 +192,7 @@ class LearningManager():
     # ----------------------------------------------------------------
     # Training
     # ----------------------------------------------------------------
-    def conduct_training(self, epochs=25, batch_size=32, optimizer_name='sgd', lr=0.005, momentum=0.7, weight_decay=0,
+    def conduct_training(self, epochs=15, batch_size=32, optimizer_name='sgd', lr=0.005, momentum=0.7, weight_decay=0,
                          alpha=0.99, eps=1e-08, trust_coef=0.001, stopping_patience=3, subset=None):
         """
         Function that performs training on the train_ds and validates on the eval_ds.
