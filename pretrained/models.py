@@ -17,9 +17,8 @@ class PretrainedModel(T.nn.Module):
         # Encoder
         self.encoder = AutoModel.from_pretrained(MODEL_NAME)
 
-        # Linear layer and cosine similarity as output
-        self.linear = T.nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE//2)
-        self.cosine = T.nn.CosineSimilarity(dim=1, eps=1e-6)
+        # Learnable linear layer on top of the embeddings
+        self.linear = T.nn.Linear(HIDDEN_SIZE, HIDDEN_SIZE)
 
 
 
@@ -58,13 +57,11 @@ class PretrainedModel(T.nn.Module):
         emb1 = self.feed(batch["input1"])
         emb2 = self.feed(batch["input2"])
 
-        # Apply the linear layer and return the cosine similarity
-        logits1 = self.linear(emb1)
-        logits2 = self.linear(emb2)
+        # Apply the linear layer to the embeddings and calculate the dot product as logits
+        # Similar to Radford et al.: https://arxiv.org/pdf/2103.00020.pdf
+        logits = T.sum(self.linear(emb1) * self.linear(emb2), dim=-1)
 
-        cos = self.cosine(logits1, logits2)
-
-        return T.unsqueeze(cos, -1)
+        return T.unsqueeze(logits, -1)
 
 
 
