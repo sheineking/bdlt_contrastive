@@ -57,6 +57,67 @@ class ContrastiveModel(T.nn.Module):
 
 
 
+
+
+
+
+class PredictionModel(T.nn.Module):
+    def __init__(self):
+        super(PredictionModel, self).__init__()
+        self.encoder = AutoModel.from_pretrained(MODEL_NAME)
+
+    def feed(self, x):
+        """
+        Calculates the embeddings based on tokens, attention_masks and token_type_ids
+        :param x:   Input dictionary
+        :return:    Normalized embedding
+        """
+
+        # Encode the input
+        output = self.encoder(**x)
+        embedding = mean_pooling(output, x['attention_mask'])
+
+        # Return the normalized embedding
+        return F.normalize(embedding, p=2, dim=1)
+
+
+    def forward(self, batch: dict):
+        """
+        Function that takes in a dictionary for the current batch that contains tokenized sentence pairs of the form
+
+        {"input_ids": tensor([[...]]), "attention_mask": tensor([[...]]), "token_type_ids": tensor([[..]])}
+
+        and returns a prediction for whether they are paraphrases
+
+        :param batch            The batch of tokenized sentence pairs produced by a dataloader.
+                                In contrast to the supervised model, the pair is encoded separately and not as one
+        :return:                The logits for the sentence pairs
+        """
+
+        # Calculate the embeddings for the sentence pairs in the batch
+        emb1 = self.feed(batch["input1"])
+        emb2 = self.feed(batch["input2"])
+
+        # Calculate the dot product of the embeddings as logits
+        # Similar to Radford et al.: https://arxiv.org/pdf/2103.00020.pdf
+        logits = T.sum(emb1 * emb2, dim=-1)
+
+        return T.unsqueeze(logits, -1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Helper functions
 # ------------------------------------------------------------------------
 # From https://huggingface.co/sentence-transformers/all-mpnet-base-v2

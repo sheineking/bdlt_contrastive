@@ -47,7 +47,7 @@ class PretrainedModel(T.nn.Module):
 
         :param batch            The batch of tokenized sentence pairs produced by a dataloader.
                                 In contrast to the supervised model, the pair is encoded separately and not as one
-        :return:                The predictions for the sentence pairs
+        :return:                The logits for the sentence pairs
         """
 
         # Drop the labels
