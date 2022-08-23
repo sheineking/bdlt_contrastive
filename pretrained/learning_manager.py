@@ -1,4 +1,5 @@
-from datasets import load_dataset, ClassLabel, Value
+from datasets import load_dataset, concatenate_datasets
+import copy
 
 from transformers import AutoTokenizer
 import torch as T
@@ -120,7 +121,7 @@ class LearningManager():
     def load_dataset(self):
         """
         Function to load an already preprocessed dataset from csv.
-        Format shold be:
+        Format should be:
         sentence1, sentence2, label
         """
 
@@ -129,9 +130,27 @@ class LearningManager():
             self.load_dataset_glue()
 
         else:
-          self.dataset = load_dataset("ContrastivePretrainingProject/supervised_paraphrases", use_auth_token=True)
-          #self.dataset = self.dataset.filter(lambda example: example["index"] < 100)
-          self.dataset = self.dataset.cast_column("label",ClassLabel(num_classes=2))
+            self.dataset = load_dataset("ContrastivePretrainingProject/contrastive_paraphrases", use_auth_token=True)
+
+            remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
+            self.num_sentences = 2
+            #
+            # Add copy of dataset which moves sentence3 to sentence2,
+            # so that negative and positive samples are used.
+            # Additionally, add lable column
+            self.dataset = self.dataset.map(lambda example: {"label": 1})
+            dataset_negatives = copy.deepcopy(self.dataset)
+            # remove paraphrases
+            dataset_negatives = dataset_negatives.remove_columns(["sentence2"])
+            # move negative to position of paraphrase and change label
+            dataset_negatives = dataset_negatives.rename_column("sentence3", "sentence2")
+            dataset_negatives = dataset_negatives.map(lambda example: {"label": 0})
+            dataset_negatives = dataset_negatives.remove_columns(remove_cols[1:])
+            self.dataset = self.dataset.remove_columns(remove_cols)
+
+            for split in ['train', 'validation', 'test']:
+                self.dataset[split] = concatenate_datasets([self.dataset[split], dataset_negatives[split]]).shuffle(
+                    seed=42)
 
 
     # ----------------------------------------------------------------
@@ -157,17 +176,15 @@ class LearningManager():
             self.load_dataset()
 
         # Determine removal columns (index and all sentences)
-        remove_columns = ["idx", "sentence1", "sentence2"] if self.use_wandb \
-            else ["index", "sentence1", "sentence2", 'path', 'name', 'split']
+        remove_columns = ["idx", "sentence1", "sentence2"]
 
         # Apply tokenization and remove unnecessary columns
         tokenized_ds = self.dataset.map(lambda example: self.tokenize_function(example),
                                         remove_columns=remove_columns)
 
         tokenized_ds = tokenized_ds.rename_column("label", "labels")
-
         tokenized_ds = tokenized_ds.with_format("torch")
-        print(tokenized_ds.column_names)
+
         # Unsqueeze the label column
         tokenized_ds = tokenized_ds.map(lambda example: {"labels": T.unsqueeze(example["labels"], dim=0)},
                                         remove_columns=["labels"])
