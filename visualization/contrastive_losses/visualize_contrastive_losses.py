@@ -48,8 +48,8 @@ def save_optimizer_visualization(loss_name="Pairwise", linewidth=3, large_fontsi
             min_loss = min(min_loss, min(loss_series))
 
     # Determine the y limits by first finding the position of the first non-zero digit and then rounding to that
-    max_round_digits = int(('%e' % max_loss).partition('-')[2])
-    min_round_digits = int(('%e' % min_loss).partition('-')[2]) - 1
+    max_round_digits = int(('%e' % max_loss).partition('-')[2]) + 1
+    min_round_digits = int(('%e' % min_loss).partition('-')[2])
     y_max = round_decimals_up(max_loss, max_round_digits)
     y_min = round_decimals_down(min_loss, min_round_digits)
 
