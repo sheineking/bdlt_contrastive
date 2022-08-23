@@ -9,8 +9,8 @@ CONFIGS = {"Supervised_SGD": {"learning_manager": {"model_name": "Supervised_SGD
                                            "trust_coef": 0.001}},
 
            "Supervised_RMS": {"learning_manager": {"model_name": "Supervised_RMS", "encoder": "baseline"},
-                              "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "rmsprop", "lr": 0.002,
-                                           "momentum": 0.8, "weight_decay": 0, "alpha": 0.85, "eps": 1.5e-09,
+                              "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "rmsprop", "lr": 0.00005,
+                                           "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                            "trust_coef": 0.001}},
 
            "Supervised_LARS": {"learning_manager": {"model_name": "Supervised_LARS", "encoder": "baseline"},

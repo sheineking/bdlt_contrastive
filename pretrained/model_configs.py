@@ -18,7 +18,7 @@ CONFIGS = { # ==================================================================
                                                 "trust_coef": 0.001}},
            "Pretrained_Triplet": {"learning_manager": {"model_name": "Pretrained_Triplet",
                                                         "encoder": "Triplet_RMS"},
-                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.01,
+                                   "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.00005,
                                                 "momentum": 0, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                                 "trust_coef": 0.001}},
            "Pretrained_InfoNCE": {"learning_manager": {"model_name": "Pretrained_InfoNCE",
