@@ -176,7 +176,7 @@ class LearningManager():
 
         # Determine removal columns (index and all sentences)
         remove_columns = ["idx", "sentence1", "sentence2"] if self.use_wandb \
-            else ["index", "sentence1", "sentence2", 'path', 'name', 'split']
+            else ["idx", "sentence1", "sentence2"]
 
         # Apply tokenization and remove unnecessary columns
         tokenized_ds = self.dataset.map(lambda example: self.tokenize_function(example),
