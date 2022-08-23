@@ -5,11 +5,11 @@ import torch as T
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from torchmetrics import Accuracy, AUROC, F1Score
-from glob import glob
 import wandb
 
 import os
 import time
+import pandas as pd
 
 import models as m
 
@@ -221,29 +221,29 @@ class LearningManager():
             self.tokenize_data()
 
         # Prepare model and optimizer
-        model = self.model.to(device)
+        model = self.check_for_existing_weights(epochs=epochs)
         optimizer = m.get_optimizer(params=model.parameters(), optimizer_name=optimizer_name, lr=lr, momentum=momentum,
                                     weight_decay=weight_decay, alpha=alpha, eps=eps, trust_coef=trust_coef)
 
-        # Prepare early stopping and checkpointing
+        # Prepare early stopping
         self.stopping_patience = stopping_patience
         self.stagnant_epochs = 0
-        self.previous_loss = float('inf')
-        self.best_val_loss = float('inf')
 
         # Create summary writer and a csv-file to write the loss values (if not wandb sweeping)
         if not self.use_wandb:
             writer = SummaryWriter(log_dir=self.log_path)
-            with open(self.csv_path, 'w') as file:
-                # Fill a list with strings for the header
-                out_line = ["epoch", "train_loss"]
-                for name in self.metrics.keys():
-                    out_line.append("train_" + name)
-                out_line.append("val_loss")
-                for name in self.metrics.keys():
-                    out_line.append("val_" + name)
 
-                file.write(",".join(out_line) + "\n")
+            if not self.resume_from_existing_model:
+                with open(self.csv_path, 'w') as file:
+                    # Fill a list with strings for the header
+                    out_line = ["epoch", "train_loss"]
+                    for name in self.metrics.keys():
+                        out_line.append("train_" + name)
+                    out_line.append("val_loss")
+                    for name in self.metrics.keys():
+                        out_line.append("val_" + name)
+
+                    file.write(",".join(out_line) + "\n")
 
         # Prepare the two dataloaders (the data is formatted for usage with torch and sent to the device)
         train_data = self.train_ds.select(range(subset)) if subset is not None else self.train_ds
@@ -260,7 +260,7 @@ class LearningManager():
         print(f"- Loss:             {self.loss}")
         print(f"- Patience:         {stopping_patience}\n\n")
 
-        for epoch in range(epochs):
+        for epoch in range(self.start_epoch, epochs):
             print("\n" + "-" * 100)
             print(f"Epoch {epoch+1}/{epochs}")
 
@@ -301,6 +301,52 @@ class LearningManager():
         if not self.use_wandb:
             writer.flush()
             writer.close()
+
+
+    def check_for_existing_weights(self, epochs):
+        """
+        Function to check if a model with the same weights was already trained.
+        If so, the user is asked whether the training should be resumed and the necessary values are loaded.
+
+        :param epochs:      How many epochs should be trained in total
+        """
+        model = self.model.to(device)
+        self.previous_loss = float('inf')
+        self.best_val_loss = float('inf')
+        self.start_epoch = 0
+        self.resume_from_existing_model = False
+
+        if os.path.isfile(self.csv_path):
+            df = pd.read_csv(self.csv_path)
+            min_row = df[df["val_loss"] == df["val_loss"].min()]
+
+            # Determine start_epoch and ask user for confirmation
+            self.start_epoch = min_row["epoch"].values[0] + 1
+            previous_epochs = df.shape[0]
+            if  previous_epochs >= epochs:
+                print(f"A model with the same name was already trained for {previous_epochs} epochs. "
+                      f"Please choose a different model_name or delete the corresponding files in ./models/csv_logs, "
+                      f"tensorboard_logs and weights.")
+                exit(1)
+
+            print(f"Existing logs were found under {self.csv_path}. "
+                  f"Training would be resumed from epoch {self.start_epoch + 1}/{epochs}")
+            resume_training = input("Would you like to continue training? (y/n): ").lower()
+            if resume_training != "y":
+                print("Training process aborted by user command.")
+                exit(1)
+
+            # Set loss values
+            self.resume_from_existing_model = True
+            self.previous_loss = self.best_val_loss = min_row["val_loss"].values[0]
+
+            # Load the weights
+            encoder_weights = T.load(self.weight_path)
+            model.load_state_dict(encoder_weights)
+
+            print(f"Existing weights loaded. Resuming training from epoch {self.start_epoch}.")
+
+        return model
 
 
     def continue_training_and_checkpoint(self, val_loss, model):

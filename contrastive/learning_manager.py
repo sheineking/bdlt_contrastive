@@ -9,11 +9,11 @@ import wandb
 
 import os
 import time
-from glob import glob
 
 import models as m
 import losses as l
 import dataset_prep_dummy as d
+import pandas as pd
 
 
 # ================================================================
@@ -107,67 +107,56 @@ class LearningManager():
     def load_dataset(self):
         """
         Function to load an already preprocessed dataset from csv.
-        Format shold be:
+        Format should be:
         anchor, paraphrase, neg1, neg2, neg3...
         """
-        # append = ""
-        # data_dir = "../dataset/neg/*paws"
-        # train_csvs = glob(data_dir + "*train*" + append + ".csv")
-        # test_csvs = glob(data_dir + "*test*" + append + ".csv")
-        # validation_csvs = glob(data_dir + "*validation*" + append + ".csv")
 
-        # self.dataset = load_dataset("csv", data_files={
-        #     "train": train_csvs,
-        #     "test": test_csvs,
-        #     "validation": validation_csvs})
+        # Load the glue dataset if used in sweeping
+        if self.use_wandb:
+            self.load_dataset_glue()
 
-        # print(self.dataset.num_rows)
-        # self.dataset = self.dataset.filter(lambda x: x["idx"] < 10000)
-        # print(self.dataset.num_rows)
-
-        
-
-        self.dataset = load_dataset("ContrastivePretrainingProject/contrastive_paraphrases", use_auth_token=True)
+        else:
+            self.dataset = load_dataset("ContrastivePretrainingProject/contrastive_paraphrases", use_auth_token=True)
 
 
-        if self.train_mode == "pairwise":
-            remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
-            self.num_sentences = 2
-            #
-            # Add copy of dataset which moves sentence3 to sentence2, 
-            # so that negative and positive samples are used.
-            # Additionally, add lable column
-            self.dataset = self.dataset.map(lambda example: {"label": 1})
-            dataset_negatives = copy.deepcopy(self.dataset)
-            # remove paraphrases
-            dataset_negatives = dataset_negatives.remove_columns(["sentence2"])
-            # move negative to position of paraphrase and change label
-            dataset_negatives = dataset_negatives.rename_column("sentence3", "sentence2")
-            dataset_negatives =dataset_negatives.map(lambda example: {"label": 0})
+            if self.train_mode == "pairwise":
+                remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
+                self.num_sentences = 2
+                #
+                # Add copy of dataset which moves sentence3 to sentence2,
+                # so that negative and positive samples are used.
+                # Additionally, add lable column
+                self.dataset = self.dataset.map(lambda example: {"label": 1})
+                dataset_negatives = copy.deepcopy(self.dataset)
+                # remove paraphrases
+                dataset_negatives = dataset_negatives.remove_columns(["sentence2"])
+                # move negative to position of paraphrase and change label
+                dataset_negatives = dataset_negatives.rename_column("sentence3", "sentence2")
+                dataset_negatives =dataset_negatives.map(lambda example: {"label": 0})
 
-            dataset_negatives = dataset_negatives.remove_columns(remove_cols[1:])
-            self.dataset = self.dataset.remove_columns(remove_cols)
+                dataset_negatives = dataset_negatives.remove_columns(remove_cols[1:])
+                self.dataset = self.dataset.remove_columns(remove_cols)
 
-            print(self.dataset)
-            print(dataset_negatives)
-            for split in ['train', 'validation', 'test']:
+                print(self.dataset)
+                print(dataset_negatives)
+                for split in ['train', 'validation', 'test']:
 
-                self.dataset[split] = concatenate_datasets([self.dataset[split], dataset_negatives[split]]).shuffle(seed=42)
-            print(self.dataset)
+                    self.dataset[split] = concatenate_datasets([self.dataset[split], dataset_negatives[split]]).shuffle(seed=42)
+                print(self.dataset)
 
-        # Create a set of negative
-        if self.train_mode == "triplet":
-            remove_cols = ["sentence" + str(idx) for idx in range(4, 7)]
-            self.num_sentences = 3
-            self.dataset = self.dataset.remove_columns(remove_cols)
+            # Create a set of negative
+            if self.train_mode == "triplet":
+                remove_cols = ["sentence" + str(idx) for idx in range(4, 7)]
+                self.num_sentences = 3
+                self.dataset = self.dataset.remove_columns(remove_cols)
 
 
-        if self.train_mode == "infoNCE":
-            self.num_sentences = 6
-        
-        # make sure all pairs contain enough samples
-        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(self.num_sentences)] != "")
-        self.dataset = self.dataset.filter(lambda example: example["sentence" + str(self.num_sentences)] != None)
+            if self.train_mode == "infoNCE":
+                self.num_sentences = 6
+
+            # make sure all pairs contain enough samples
+            self.dataset = self.dataset.filter(lambda example: example["sentence" + str(self.num_sentences)] != "")
+            self.dataset = self.dataset.filter(lambda example: example["sentence" + str(self.num_sentences)] != None)
 
 
     # ----------------------------------------------------------------
@@ -284,21 +273,21 @@ class LearningManager():
             self.tokenize_data()
 
         # Prepare model and optimizer
-        model = self.model.to(device)
+        model = self.check_for_existing_weights(epochs=epochs)
         optimizer = m.get_optimizer(params=model.parameters(), optimizer_name=optimizer_name, lr=lr, momentum=momentum,
                                     weight_decay=weight_decay, alpha=alpha, eps=eps, trust_coef=trust_coef)
 
-        # Prepare early stopping and checkpointing
+        # Prepare early stopping
         self.stopping_patience = stopping_patience
         self.stagnant_epochs = 0
-        self.previous_loss = float('inf')
-        self.best_val_loss = float('inf')
 
         # Create summary writer and a csv-file to write the loss values (if not wandb sweeping)
         if not self.use_wandb:
             writer = SummaryWriter(log_dir=self.log_path)
-            with open(self.csv_path, 'w') as file:
-                file.write('epoch,train_loss,val_loss,\n')
+
+            if not self.resume_from_existing_model:
+                with open(self.csv_path, 'w') as file:
+                    file.write('epoch,train_loss,val_loss,\n')
 
         # Prepare the two dataloaders (the data is formatted for usage with torch and sent to the device)
         train_data = self.train_ds.select(range(subset)) if subset is not None else self.train_ds
@@ -314,7 +303,7 @@ class LearningManager():
         print(f"- Loss:             {self.loss}")
         print(f"- Patience:         {stopping_patience}\n\n")
 
-        for epoch in range(epochs):
+        for epoch in range(self.start_epoch, epochs):
             print("\n" + "-" * 100)
             print(f"Epoch {epoch+1}/{epochs}")
 
@@ -350,6 +339,53 @@ class LearningManager():
         if not self.use_wandb:
             writer.flush()
             writer.close()
+
+
+
+    def check_for_existing_weights(self, epochs):
+        """
+        Function to check if a model with the same weights was already trained.
+        If so, the user is asked whether the training should be resumed and the necessary values are loaded.
+
+        :param epochs:      How many epochs should be trained in total
+        """
+        model = self.model.to(device)
+        self.previous_loss = float('inf')
+        self.best_val_loss = float('inf')
+        self.start_epoch = 0
+        self.resume_from_existing_model = False
+
+        if os.path.isfile(self.csv_path):
+            df = pd.read_csv(self.csv_path)
+            min_row = df[df["val_loss"] == df["val_loss"].min()]
+
+            # Determine start_epoch and ask user for confirmation
+            self.start_epoch = min_row["epoch"].values[0] + 1
+            previous_epochs = df.shape[0]
+            if  previous_epochs >= epochs:
+                print(f"A model with the same name was already trained for {previous_epochs} epochs. "
+                      f"Please choose a different model_name or delete the corresponding files in ./models/csv_logs, "
+                      f"tensorboard_logs and weights.")
+                exit(1)
+
+            print(f"Existing logs were found under {self.csv_path}. "
+                  f"Training would be resumed from epoch {self.start_epoch + 1}/{epochs}")
+            resume_training = input("Would you like to continue training? (y/n): ").lower()
+            if resume_training != "y":
+                print("Training process aborted by user command.")
+                exit(1)
+
+            # Set loss values
+            self.resume_from_existing_model = True
+            self.previous_loss = self.best_val_loss = min_row["val_loss"].values[0]
+
+            # Load the weights
+            encoder_weights = T.load(self.weight_path)
+            model.load_state_dict(encoder_weights)
+
+            print(f"Existing weights loaded. Resuming training from epoch {self.start_epoch}.")
+
+        return model
 
 
     def continue_training_and_checkpoint(self, val_loss, model):
