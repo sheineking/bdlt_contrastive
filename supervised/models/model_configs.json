@@ -2,7 +2,7 @@
     "Supervised_SGD": {
         "learning_manager": {
             "model_name": "Supervised_SGD",
-            "encoder": null
+            "encoder": "baseline"
         },
         "training": {
             "epochs": 10,
@@ -19,7 +19,7 @@
     "Supervised_RMS": {
         "learning_manager": {
             "model_name": "Supervised_RMS",
-            "encoder": null
+            "encoder": "baseline"
         },
         "training": {
             "epochs": 10,
@@ -36,7 +36,7 @@
     "Supervised_LARS": {
         "learning_manager": {
             "model_name": "Supervised_LARS",
-            "encoder": null
+            "encoder": "baseline"
         },
         "training": {
             "epochs": 10,
