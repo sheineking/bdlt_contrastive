@@ -14,8 +14,8 @@ CONFIGS = {"Supervised_SGD": {"learning_manager": {"model_name": "Supervised_SGD
                                            "trust_coef": 0.001}},
 
            "Supervised_LARS": {"learning_manager": {"model_name": "Supervised_LARS", "encoder": "baseline"},
-                               "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "lars", "lr": 0.285,
-                                            "momentum": 0.3, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
+                               "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "lars", "lr": 0.005,
+                                            "momentum": 0.7, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                             "trust_coef": 0.00125}}
            }
 
