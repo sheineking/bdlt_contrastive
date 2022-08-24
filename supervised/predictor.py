@@ -6,9 +6,9 @@ from transformers import AutoTokenizer
 import models as m
 
 WEIGHT_PATH = os.path.abspath("./models/weights/")
-CUTOFF_VALS = {"Supervised_SGD": 0.9,
-               "Supervised_RMS": 0.9,
-               "Supervised_LARS": 0.9}
+CUTOFF_VALS = {"Supervised_SGD": 1.00399816036224,
+               "Supervised_RMS": 0.943155884742737,
+               "Supervised_LARS": 1.51905393600464}
 
 device = T.device("cuda" if T.cuda.is_available() else "cpu")
 
@@ -29,6 +29,7 @@ class Predictor():
         except:
             print(f"{model_name} is not a valid model name. Please use one of the following names:")
             print(", ".join(list(CUTOFF_VALS.keys())))
+            exit(1)
 
         print("\n" + "=" * 50)
         print(f"       Prediction: {model_name} ")
