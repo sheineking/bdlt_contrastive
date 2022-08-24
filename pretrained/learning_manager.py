@@ -56,6 +56,9 @@ class LearningManager():
         self.encoder = encoder
         print(f"Encoder: {encoder}")
         self.load_encoder_weights(encoder)
+        # Freeze the encoder to only train the classifier
+        for param in self.model.encoder.parameters():
+            param.requires_grad = False
 
         self.loss = T.nn.BCEWithLogitsLoss()
 
