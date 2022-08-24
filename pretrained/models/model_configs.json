@@ -36,7 +36,7 @@
     "Pretrained_InfoNCE": {
         "learning_manager": {
             "model_name": "Pretrained_InfoNCE",
-            "encoder": "InfoNCE_RMS"
+            "encoder": "InfoNCE_SGD"
         },
         "training": {
             "epochs": 10,

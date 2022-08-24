@@ -15,8 +15,8 @@ import numpy as np
 MODELS = {"supervised": ["Supervised_SGD", "Supervised_RMS", "Supervised_LARS"],
           "pretrained": ["Pretrained_Pairwise", "Pretrained_Triplet", "Pretrained_InfoNCE"],
           "contrastive": ["Pairwise_SGD", "Pairwise_RMS", "Pairwise_LARS",
-                          "Triplet_SGD", "Triplet_LARS", "Triplet_LARS",
-                          "InfoNCE_SGD", "InfoNCE_RMS", "InfoNCE_LARS"]}
+                          "Triplet_SGD", "Triplet_RMS", "Triplet_LARS",
+                          "InfoNCE_SGD", "InfoNCE_LARS", "InfoNCE_RMS"]}
 
 MAIN_DIR = os.path.abspath("./")
 
