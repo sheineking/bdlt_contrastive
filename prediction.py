@@ -2,17 +2,16 @@ import os
 import sys
 import pandas as pd
 
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
+import copy
 import torch as T
 
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve
 import numpy as np
 
 # ===================================================================
 # Preparation
 # ===================================================================
-DATASET = {"path": "glue", "name": "mrpc"}
-
 MODELS = {"supervised": ["Supervised_SGD", "Supervised_RMS", "Supervised_LARS"],
           "pretrained": ["Pretrained_Pairwise", "Pretrained_Triplet", "Pretrained_InfoNCE"],
           "contrastive": ["Pairwise_SGD", "Pairwise_RMS", "Pairwise_LARS",
@@ -28,17 +27,46 @@ def switch_directory(folder_name='./contrastive/'):
     sys.path.append(dir_name)
     os.chdir(dir_name)
 
+# ==================================================================
+# Data loading functions
+# ==================================================================
+def load_val_data():
+    dataset = load_dataset("ContrastivePretrainingProject/contrastive_paraphrases", use_auth_token=True)
+
+    remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
+
+    # Add copy of dataset which moves sentence3 to sentence2,
+    # so that negative and positive samples are used.
+    # Additionally, add lable column
+    dataset = dataset.map(lambda example: {"label": 1})
+    dataset_negatives = copy.deepcopy(dataset)
+    # remove paraphrases
+    dataset_negatives = dataset_negatives.remove_columns(["sentence2"])
+    # move negative to position of paraphrase and change label
+    dataset_negatives = dataset_negatives.rename_column("sentence3", "sentence2")
+    dataset_negatives = dataset_negatives.map(lambda example: {"label": 0})
+    dataset_negatives = dataset_negatives.remove_columns(remove_cols[1:])
+    dataset = dataset.remove_columns(remove_cols)
+
+    for split in ['train', 'validation', 'test']:
+        # No shuffling to have the same labels for all
+        dataset[split] = concatenate_datasets([dataset[split], dataset_negatives[split]])
+
+    return dataset["validation"]
+
+
+def load_glue_dataset():
+    return load_dataset(path="glue", name="mrpc")["validation"]
+
 
 # ===================================================================
 # Main function
 # ===================================================================
-def perform_prediction(folders=None, batch_size=4, return_logits=False):
+def perform_prediction(dataset, folders=None, batch_size=4, return_logits=True, out_path_num=1):
     if folders is None:
         folders = ["supervised", "pretrained", "contrastive"]
 
-    dataset = load_dataset(**DATASET)["validation"]
-
-    out_path = os.path.abspath("./logits.csv" if return_logits else "./predictions.csv")
+    out_path = os.path.abspath(f"./logits_{out_path_num}.csv" if return_logits else f"./predictions_{out_path_num}.csv")
 
     # Check if a CSV-file already exists and if so, load its columns to skip these models
     df = pd.DataFrame()
@@ -67,6 +95,7 @@ def perform_prediction(folders=None, batch_size=4, return_logits=False):
             Predictor.tokenize_dataset(dataset)
 
             predictions, labels = Predictor.predict(return_logits=return_logits, batch_size=batch_size)
+            print(labels)
 
             # If the first iteration is run, save the labels (they will stay the same afterwards)
             if i == 0:

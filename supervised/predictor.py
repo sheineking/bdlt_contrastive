@@ -102,13 +102,14 @@ class Predictor():
                 print(f"- Processing batch {i}/{num_batches}")
 
             # Predictions are made based on the cutoff value
+            batch_labels = batch["labels"]
             logits = model(batch=batch)
             if not return_logits:
                 logits = (logits > self.cutoff).float()
 
             # Append the predictions and labels for the current batch
             predictions.extend(T.squeeze(logits, dim=-1).detach().cpu().numpy().tolist())
-            labels.extend(T.squeeze(batch["labels"], dim=-1).detach().cpu().numpy().tolist())
+            labels.extend(T.squeeze(batch_labels, dim=-1).detach().cpu().numpy().tolist())
 
             i += 1
 
