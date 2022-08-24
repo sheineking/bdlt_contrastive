@@ -7,7 +7,7 @@ from datasets import load_dataset, concatenate_datasets
 import copy
 import torch as T
 
-from sklearn.metrics import roc_curve, confusion_matrix, f1_score
+from sklearn.metrics import roc_curve, precision_recall_curve, confusion_matrix, f1_score
 import numpy as np
 import pandas as pd
 
@@ -108,10 +108,15 @@ def perform_prediction(dataset, folder_name="supervised", batch_size=4, return_l
     os.chdir(MAIN_DIR)
 
 
-def find_optimal_cutoffs(logits_path="./logits.csv", out_path="./cutoff_values.csv"):
+def find_optimal_cutoffs(logits_path="./logits.csv", out_path="./cutoff_values.csv", target="f1"):
     df = pd.read_csv(logits_path)
-    model_names = list(df.columns)[2:]
+
+    # Drop all unnecessary columns (unnamed; [1:] drops "labels")
+    columns = df.keys().values.tolist()
+    model_names = [name for name in columns if not "Unnamed" in name][1:]
     skip_models = []
+
+    optimizer_func = find_cutoff_f1 if target == "f1" else find_cutoff_roc
 
     if not os.path.isfile(out_path):
         with open(out_path, "w") as f:
@@ -125,25 +130,45 @@ def find_optimal_cutoffs(logits_path="./logits.csv", out_path="./cutoff_values.c
             print(f"{model} was already recorded. This model will be skipped.")
             continue
 
-        cutoff_value = find_single_cutoff(df["labels"], df[model])
+        cutoff_value = optimizer_func(df["labels"], df[model])
         with open(out_path, "a") as f:
             f.write(f"{model},{cutoff_value}\n")
 
 
-def find_single_cutoff(labels, logits):
+def find_cutoff_roc(labels, logits):
     """
-    Find the optimal probability cutoff point for a model based on the logits.
+    Find the optimal probability cutoff point for a model based on AUROC.
 
     :param labels:      The correct labels
     :param logits:      The logits calculated by each model
     :return:            The optimal cutoff value
     """
-    fpr, tpr, threshold = roc_curve(labels, logits)
+    fpr, tpr, thresholds = roc_curve(labels, logits)
     i = np.arange(len(tpr))
-    roc = pd.DataFrame({'tf': pd.Series(tpr - (1 - fpr), index=i), 'threshold': pd.Series(threshold, index=i)})
+    roc = pd.DataFrame({'tf': pd.Series(tpr - (1 - fpr), index=i), 'threshold': pd.Series(thresholds, index=i)})
     roc_t = roc.iloc[(roc.tf - 0).abs().argsort()[:1]]
 
     return roc_t['threshold'].values[0]
+
+def find_cutoff_f1(labels, logits):
+    """
+    Find the optimal probability cutoff point for a model based on precision and recall.
+
+    :param labels:      The correct labels
+    :param logits:      The logits calculated by each model
+    :return:            The optimal cutoff value
+    """
+    precision, recall, thresholds = precision_recall_curve(labels, logits)
+    # Drop the last elements as these are 1 and 0 respectively (and thresholds contains one less element)
+    precision = precision[:-1].copy()
+    recall = recall[:-1].copy()
+
+    i = np.arange(len(precision))
+    f1 = pd.DataFrame({'val': pd.Series(2*precision*recall/(precision+recall+1e-10), index=i),
+                       'threshold': pd.Series(thresholds, index=i)})
+    f1_t = f1.iloc[f1.val.argsort()[-1:]]
+
+    return f1_t['threshold'].values[0]
 
 
 
@@ -178,7 +203,7 @@ def get_f1_and_conf(prediction_df: pd.DataFrame(), out_path=".f1_scores.csv"):
 
     # Drop all unnecessary columns (unnamed; [1:] drops "labels")
     columns = prediction_df.keys().values.tolist()
-    model_names = [name for name in prediction_df.keys().values.tolist() if not "Unnamed" in name][1:]
+    model_names = [name for name in columns if not "Unnamed" in name][1:]
 
     # Get the f1-scores and print them with the confusion matrix
     for model_name in model_names:

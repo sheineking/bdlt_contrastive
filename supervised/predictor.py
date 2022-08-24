@@ -6,9 +6,9 @@ from transformers import AutoTokenizer
 import models as m
 
 WEIGHT_PATH = os.path.abspath("./models/weights/")
-CUTOFF_VALS = {"Supervised_SGD": 1.00399816036224,
-               "Supervised_RMS": 0.943155884742737,
-               "Supervised_LARS": 1.51905393600464}
+CUTOFF_VALS = {"Supervised_SGD": 0.0436110943555831,
+               "Supervised_RMS": 0.376385033130646,
+               "Supervised_LARS": 1.51832222938538}
 
 device = T.device("cuda" if T.cuda.is_available() else "cpu")
 
