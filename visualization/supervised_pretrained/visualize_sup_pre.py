@@ -20,7 +20,7 @@ RENAMING_DICT = {"Pretrained_Pairwise.csv": "Pre_Pairwise",
                  "Supervised_LARS.csv": "Sup_LARS"}
 
 VALUE_DICT = {"loss": {"Label": "Loss",
-                       "Legend_Pos": "upper right"},
+                       "Legend_Pos": "below"},
               "auroc": {"Label": "AUROC",
                        "Legend_Pos": "lower right"},
               "accuracy": {"Label": "Accuracy",
@@ -78,7 +78,7 @@ def save_visualization(value_name="loss", model_types=None, linewidth=2.5, large
     # Plot the two graphs separately to ensure same plt configurations (did not work correctly otherwise)
     for set_name, model_dict in main_dict.items():
         # Create a new subplot
-        fig, ax = plt.subplots(figsize=(7.5, 7.5))
+        fig, ax = plt.subplots(figsize=(9, 9))
 
         for line_name, series in model_dict.items():
             color = OPTIMIZER_COLORS[line_name]
@@ -94,7 +94,8 @@ def save_visualization(value_name="loss", model_types=None, linewidth=2.5, large
         plt.yticks(fontsize=small_fontsize)
         plt.xlabel("Epoch", fontsize=large_fontsize)
         plt.xticks(fontsize=large_fontsize)
-        plt.legend(loc=legend_pos, fontsize=small_fontsize)
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
+                   fancybox=True, shadow=True, ncol=3, fontsize=small_fontsize)
 
         fig.savefig(set_name + "_" + y_label + ".png", dpi=300.0)
 
@@ -178,4 +179,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Create the two graphs
-    save_visualization(value_name=args.value_name, model_types=["supervised"])
+    save_visualization(value_name=args.value_name, model_types=["supervised", "pretrained"])
