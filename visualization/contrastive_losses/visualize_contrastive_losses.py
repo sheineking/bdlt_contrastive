@@ -1,12 +1,3 @@
-# 1. Take in a loss name (Pairwise, Triplet, InfoNCE) and load all three csv for all optimizers
-# 2. Get the loss values for the validation data and train data for each optimizer
-# 3. Create two plots (With the same y-axis): One for the validation data and one for the training data
-#   - Use the same three colors the optimizers in each of the loss graphs
-#   - (If necessary, use dotted line for validation and solid line for train)
-
-# In the paper, put two graphs side by side for each loss
-# Reuse code from distance visualization
-
 import os
 import pandas as pd
 import math
