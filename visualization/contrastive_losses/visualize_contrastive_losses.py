@@ -47,7 +47,7 @@ def save_optimizer_visualization(loss_name="Pairwise", linewidth=3, large_fontsi
     # Plot the two graphs separately to ensure same plt configurations (did not work correctly otherwise)
     for set_name, optimizer_dict in loss_dict.items():
         # Create a new subplot
-        fig, ax = plt.subplots(figsize=(7.5, 7.5))
+        fig, ax = plt.subplots(figsize=(9.5, 7))
 
         for optimizer_name, loss_series in optimizer_dict.items():
             color = OPTIMIZER_COLORS[optimizer_name]
