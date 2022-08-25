@@ -18,7 +18,8 @@ MODELS = {"supervised": ["Supervised_SGD", "Supervised_RMS", "Supervised_LARS"],
           "pretrained": ["Pretrained_Pairwise", "Pretrained_Triplet", "Pretrained_InfoNCE"],
           "contrastive": ["Pairwise_SGD", "Pairwise_RMS", "Pairwise_LARS",
                           "Triplet_SGD", "Triplet_RMS", "Triplet_LARS",
-                          "InfoNCE_SGD", "InfoNCE_LARS", "InfoNCE_RMS"]}
+                          "InfoNCE_SGD", "InfoNCE_LARS", "InfoNCE_RMS",
+                          "Baseline"]}
 
 MAIN_DIR = os.path.abspath("./")
 
@@ -32,7 +33,7 @@ def switch_directory(folder_name='../contrastive/'):
 # ==================================================================
 # Data loading functions
 # ==================================================================
-def load_val_data():
+def load_main_data():
     dataset = load_dataset("ContrastivePretrainingProject/contrastive_paraphrases", use_auth_token=True)
 
     remove_cols = ["sentence" + str(idx) for idx in range(3, 7)]
@@ -54,7 +55,7 @@ def load_val_data():
         # No shuffling to have the same labels for all
         dataset[split] = concatenate_datasets([dataset[split], dataset_negatives[split]])
 
-    return dataset["validation"]
+    return dataset
 
 
 def load_glue_dataset():
@@ -64,8 +65,9 @@ def load_glue_dataset():
 # ===================================================================
 # Main function
 # ===================================================================
-def perform_prediction(dataset, folder_name="supervised", batch_size=4, return_logits=False):
-    out_path = os.path.abspath("./logits.csv" if return_logits else "./predictions.csv")
+def perform_prediction(dataset, folder_name="supervised", out_path_add="val_", batch_size=4, return_logits=False):
+    out_path = os.path.abspath(f"./{out_path_add}logits.csv" if return_logits
+                               else f"./{out_path_add}predictions.csv")
 
     # Check if a CSV-file already exists and if so, load its columns to skip these models
     df = pd.DataFrame()
