@@ -33,6 +33,15 @@ def switch_directory(folder_name='../contrastive/'):
 # ==================================================================
 # Data loading functions
 # ==================================================================
+def load_pan_data():
+    dataset = load_dataset("ContrastivePretrainingProject/pan_evaluation", use_auth_token=True)
+
+    # Get the columns as expected by the predictors (drop unexpected cols and add idx)
+    remove_cols = ['annotation_number', 'source', 'suspicion']
+    dataset = dataset.remove_columns(remove_cols)
+
+    return dataset.map(lambda x: {"idx": 0})
+
 def load_main_data():
     dataset = load_dataset("ContrastivePretrainingProject/contrastive_paraphrases", use_auth_token=True)
 
