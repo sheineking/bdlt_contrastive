@@ -1,12 +1,3 @@
-# 1. Take in a loss name (Pairwise, Triplet, InfoNCE) and load all three csv for all optimizers
-# 2. Get the loss values for the validation data and train data for each optimizer
-# 3. Create two plots (With the same y-axis): One for the validation data and one for the training data
-#   - Use the same three colors the optimizers in each of the loss graphs
-#   - (If necessary, use dotted line for validation and solid line for train)
-
-# In the paper, put two graphs side by side for each loss
-# Reuse code from distance visualization
-
 import os
 import pandas as pd
 import math
@@ -49,7 +40,7 @@ def save_optimizer_visualization(loss_name="Pairwise", linewidth=3, large_fontsi
 
     # Determine the y limits by first finding the position of the first non-zero digit and then rounding to that
     max_round_digits = int(('%e' % max_loss).partition('-')[2]) + 1
-    min_round_digits = int(('%e' % min_loss).partition('-')[2])
+    min_round_digits = int(('%e' % min_loss).partition('-')[2]) + 1
     y_max = round_decimals_up(max_loss, max_round_digits)
     y_min = round_decimals_down(min_loss, min_round_digits)
 

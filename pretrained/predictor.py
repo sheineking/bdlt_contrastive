@@ -6,9 +6,9 @@ from transformers import AutoTokenizer
 import models as m
 
 WEIGHT_PATH = os.path.abspath("./models/weights/")
-CUTOFF_VALS = {"Pretrained_Pairwise": 0.9,
-               "Pretrained_Triplet": 0.9,
-               "Pretrained_InfoNCE": 0.9}
+CUTOFF_VALS = {"Pretrained_Pairwise": 0.318507552146912,
+               "Pretrained_Triplet": 0.845926880836487,
+               "Pretrained_InfoNCE": 0.925692558288574}
 
 device = T.device("cuda" if T.cuda.is_available() else "cpu")
 
@@ -103,13 +103,14 @@ class Predictor():
                 print(f"- Processing batch {i}/{num_batches}")
 
             # Predictions are made based on the cutoff value
+            batch_labels = batch["labels"]
             logits = model(batch=batch)
             if not return_logits:
                 logits = (logits > self.cutoff).float()
 
             # Append the predictions and labels for the current batch
             predictions.extend(T.squeeze(logits, dim=-1).detach().cpu().numpy().tolist())
-            labels.extend(T.squeeze(batch["labels"], dim=-1).detach().cpu().numpy().tolist())
+            labels.extend(T.squeeze(batch_labels, dim=-1).detach().cpu().numpy().tolist())
 
             i += 1
 

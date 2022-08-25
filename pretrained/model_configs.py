@@ -14,7 +14,7 @@ CONFIGS = {"Pretrained_Pairwise": {"learning_manager": {"model_name": "Pretraine
                                                 "momentum": 0.7, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                                 "trust_coef": 0.001}},
            "Pretrained_InfoNCE": {"learning_manager": {"model_name": "Pretrained_InfoNCE",
-                                                        "encoder": "InfoNCE_RMS"},
+                                                        "encoder": "InfoNCE_SGD"},
                                    "training": {"epochs": 10, "batch_size": 32, "optimizer_name": "sgd", "lr": 0.005,
                                                 "momentum": 0.7, "weight_decay": 0, "alpha": 0.99, "eps": 1e-08,
                                                 "trust_coef": 0.00125}}
