@@ -183,13 +183,13 @@ def find_cutoff_f1(labels, logits):
 
 
 
-def get_f1_and_conf_from_predictions(predictions_path="./predictions.csv", out_path="./f1_scores.csv"):
+def get_f1_and_conf_from_predictions(predictions_path="./predictions.csv", out_path_add="val_"):
     prediction_df = pd.read_csv(predictions_path)
-    get_f1_and_conf(prediction_df=prediction_df, out_path=out_path)
+    get_f1_and_conf(prediction_df=prediction_df, out_path_add=out_path_add)
 
 
 def get_f1_and_conf_from_logits(logits_path="./logits.csv", cutoff_path="./cutoff_values.csv",
-                                out_path="./f1_scores.csv"):
+                                out_path_add="val_"):
 
     df = pd.read_csv(logits_path)
     cutoff_df = pd.read_csv(cutoff_path)
@@ -203,14 +203,18 @@ def get_f1_and_conf_from_logits(logits_path="./logits.csv", cutoff_path="./cutof
         prediction_df[model_name] = 0
         prediction_df.loc[df[model_name] > cutoff, model_name] = 1
 
-    get_f1_and_conf(prediction_df=prediction_df, out_path=out_path)
+    get_f1_and_conf(prediction_df=prediction_df, out_path_add=out_path_add)
 
 
 
 
-def get_f1_and_conf(prediction_df: pd.DataFrame(), out_path=".f1_scores.csv"):
+def get_f1_and_conf(prediction_df: pd.DataFrame(), out_path_add="val_"):
     name_list = []
     f1_list = []
+    tn_list = []
+    tp_list = []
+    fn_list = []
+    fp_list = []
 
     # Drop all unnecessary columns (unnamed; [1:] drops "labels")
     columns = prediction_df.keys().values.tolist()
@@ -219,14 +223,28 @@ def get_f1_and_conf(prediction_df: pd.DataFrame(), out_path=".f1_scores.csv"):
     # Get the f1-scores and print them with the confusion matrix
     for model_name in model_names:
         print(model_name)
-        print(confusion_matrix(prediction_df['labels'], prediction_df[model_name]))
+        tn, fp, fn, tp = confusion_matrix(prediction_df['labels'], prediction_df[model_name]).ravel()
+        print(f"TN: {tn}")
+        print(f"TP: {tp}")
+        print(f"FN: {fn}")
+        print(f"FP: {fp}")
+
         f1 = f1_score(prediction_df['labels'], prediction_df[model_name])
-        print(f1)
+        print(f"F1: {f1}")
         print("-" * 50 + "\n\n")
 
         name_list.append(model_name)
+        # Update the lists
         f1_list.append(f1)
+        tn_list.append(tn)
+        tp_list.append(tp)
+        fn_list.append(fn)
+        fp_list.append(fp)
 
-    # Save the f1 scores
+    # Save the results
     f1_df = pd.DataFrame(list(zip(name_list, f1_list)), columns=["model_name", "f1"])
-    f1_df.to_csv(out_path)
+    f1_df.to_csv(out_path_add + "f1_scores.csv")
+
+    conf_df = pd.DataFrame(list(zip(name_list, tn_list, tp_list, fn_list, fp_list)),
+                           columns=["model_name", "TN", "TP", "FN", "FP"])
+    conf_df.to_csv(out_path_add + "confusion_matrix.csv")
