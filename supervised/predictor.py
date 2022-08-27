@@ -48,7 +48,6 @@ class Predictor():
         self.tokenizer = AutoTokenizer.from_pretrained(m.MODEL_NAME)
 
 
-    # Todo: Adapt evaluation dataset to this structure
     def tokenize_dataset(self, dataset):
         # Determine removal columns (index and all sentences)
         remove_columns = ["idx", "sentence1", "sentence2"]
@@ -65,7 +64,6 @@ class Predictor():
                                              remove_columns=["labels"])
 
 
-    # Todo: Adapt evaluation dataset to this structure
     def tokenize_function(self, example):
         # Get the two sentences
         sentence1 = example["sentence1"]

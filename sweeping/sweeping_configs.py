@@ -438,14 +438,6 @@ SWEEP_CONFIGS = {"supervised":
                                                   "alpha": 0.99,
                                                   "eps": 1e-08,
                                                   "trust_coef": 0.001},
-
-
-                        # Todo: Set the three encoder attributes for Pretrained_Pairwise, Pretrained_Triplet, and
-                        #  Pretrained_InfoNCE based on the name of the model that achieved the lowest
-                        #  validation loss. Same needs to be done in the model_configs.py (in supervised folder)
-
-                        # Todo: Run the sweeping_configs.py script after changing the parameters
-
                       "Pretrained_Pairwise": {"sweep_config": {"name": "Pretrained_Pairwise",
                                                                "method": "bayes",
                                                                "metric": {
