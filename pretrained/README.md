@@ -51,7 +51,7 @@ logits, labels = Predictor.predict(return_logits=True, batch_size=batch_size)
 
 ## Evaluation Results
 The F1-scores, precision and recall values for each model can be found in the [evaluation](../evaluation) folder.
-The columns relate to the follow datasets which are available on request:
+The columns relate to the follow datasets which are available on request via [HuggingFace](https://huggingface.co/ContrastivePretrainingProject):
 - Val = [Custom validation dataset](https://huggingface.co/datasets/ContrastivePretrainingProject/contrastive_paraphrases)
 - Test = [Custom test dataset](https://huggingface.co/datasets/ContrastivePretrainingProject/contrastive_paraphrases)
 - noObf = [No obfuscation subset of PAN-13](https://huggingface.co/datasets/ContrastivePretrainingProject/pan_evaluation)
