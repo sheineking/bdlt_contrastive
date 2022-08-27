@@ -22,10 +22,13 @@ Note: The weights are not released publicly, please contact us with your desired
 
 The models are Siamese models with two identical [sentence-transformers](https://www.SBERT.net) 
 based on the encoder [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/blob/main/README.md).
-
 The underlying encoder was trained with a contrastive objective (see [contrastive](../contrastive)) that maps sentence pairs to two separate 384-dimensional embeddings.
 The models in this directory have an additional linear layer on top of those embeddings to calculate new vector representations.
 The logits are calculated as the dot product of those vector representations.
+
+<p align="center">
+<img src="../img/Pre-Trained_Architecture.PNG" alt="centered image" height="400"/>
+</p>
 
 ## Usage
 In order to use the model, install all necessary packages featured in [requirements.txt](../requirements.txt):

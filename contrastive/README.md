@@ -19,9 +19,12 @@ Note: The weights are not released publicly, please contact us with your desired
 
 The models are Siamese models with two identical [sentence-transformers](https://www.SBERT.net) 
 based on the encoder [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/blob/main/README.md).
-
 The underlying encoder maps sentence pairs to two separate 384-dimensional embeddings and returns the dot product of 
 those embeddings as an estimate for semantic similarity of the sentences.
+
+<p align="center">
+<img src="../img/Contrastive_Architecture.PNG" alt="centered image" height="400"/>
+</p>
 
 ## Usage
 In order to use the model, install all necessary packages featured in [requirements.txt](../requirements.txt):

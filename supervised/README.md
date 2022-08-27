@@ -20,8 +20,10 @@ python main.py --mode=supervised --config=Supervised_SGD
 Note: The weights are not released publicly, please contact us with your desired use case via ss56pupo(at)studserv.uni-leipzig.de.
 
 The models are [sentence-transformers](https://www.SBERT.net) based on the encoder [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/blob/main/README.md).
-
 The underlying encoder maps sentence pairs to one 384-dimensional embedding and estimates the probability for a paraphrase based on a single linear layer.
+<p align="center">
+<img src="../img/Supervised_Architecture.PNG" alt="centered image" height="400"/>
+</p>
 
 ## Usage
 In order to use the model, install all necessary packages featured in [requirements.txt](../requirements.txt):
