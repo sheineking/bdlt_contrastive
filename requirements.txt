@@ -12,5 +12,5 @@ info-nce-pytorch==0.1.4
 torchlars==0.1.2
 torchmetrics==0.9.3
 
-protobuf==3.20.0
+protobuf==3.20.2
 tensorboard==2.8.0
