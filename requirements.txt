@@ -1,4 +1,4 @@
-transformers==4.30.0
+transformers>=4.37.0
 datasets==2.3.2
 wandb==0.12.16
 matplotlib
